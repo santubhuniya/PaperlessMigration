@@ -4,7 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-android'
     id 'dagger.hilt.android.plugin'
-    id 'com.google.gms.google-services'
+    //id 'com.google.gms.google-services'
 }
 
 android {
@@ -24,6 +24,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", "BASE_URL", "\"http://192.168.0.198:9000/\""
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -94,13 +97,13 @@ dependencies {
     //Arrow
     implementation "io.arrow-kt:arrow-core:$arrow_version"
 
-    implementation 'com.google.android.gms:play-services-location:21.0.0'
-
-    //fcm notification
-    implementation 'com.google.firebase:firebase-messaging:23.1.0'
-    implementation platform('com.google.firebase:firebase-bom:28.0.1')
-    implementation 'com.google.firebase:firebase-analytics:21.2.0'
-    implementation 'com.google.firebase:firebase-core:21.1.1'
+//    implementation 'com.google.android.gms:play-services-location:21.0.0'
+//
+//    //fcm notification
+//    implementation 'com.google.firebase:firebase-messaging:23.1.0'
+//    implementation platform('com.google.firebase:firebase-bom:28.0.1')
+//    implementation 'com.google.firebase:firebase-analytics:21.2.0'
+//    implementation 'com.google.firebase:firebase-core:21.1.1'
 
 
     testImplementation 'junit:junit:4.13.2'
