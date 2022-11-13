@@ -20,6 +20,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.paperless.app.action.ui.BudgetSummaryAction
 import com.paperless.app.action.ui.DashboardUi
 import com.paperless.app.ui.theme.PaperlessTheme
 import com.paperless.app.ui.theme.Paperless_Background
@@ -58,6 +59,9 @@ fun BuildAppRoute(navHostController: NavHostController){
     AnimatedNavHost(navController = navHostController,  startDestination = Screens.Dashboard.name){
         composable(Screens.Dashboard.name){
             DashboardUi(navHostController = navHostController)
+        }
+        composable(Screens.BudgetSummary.name){
+            BudgetSummaryAction(navHostController = navHostController)
         }
     }
 

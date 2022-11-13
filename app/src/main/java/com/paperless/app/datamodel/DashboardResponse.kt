@@ -33,3 +33,20 @@ data class Transaction(
     @Json(name = "isExpense") val isExpense : Boolean,
     @Json(name = "txnDate") val txnDate : Long
 )
+
+@JsonClass(generateAdapter = true)
+data class BudgetExpenseSummary(
+    @Json(name = "data") val budgetSummary: List<BudgetSummary>?,
+    @Json(name = "error") val error: Error?
+)
+
+@JsonClass(generateAdapter = true)
+data class BudgetSummary(
+    @Json(name = "expenseTypeId") val expenseTypeId : Long,
+    @Json(name = "expenseTypeName") val expenseTypeName : String,
+    @Json(name = "budgetId") var budgetId: Long?,
+    @Json(name = "budgetName") var budgetName : String?,
+    @Json(name = "expenseAmount") var expenseAmount : Float?,
+    @Json(name = "budgetAmount") var budgetAmount: Float?,
+    @Json(name = "monthYear") val monthYear : String
+)

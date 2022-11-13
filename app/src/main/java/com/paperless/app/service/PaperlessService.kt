@@ -1,5 +1,6 @@
 package com.paperless.app.service
 
+import com.paperless.app.datamodel.BudgetExpenseSummary
 import com.paperless.app.datamodel.DashboardResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -12,4 +13,10 @@ interface PaperlessService {
         @Path("userId") userId : Long,
         @Path("monthYear") monthYear : String
     ) : Response<DashboardResponse?>
+
+    @GET("budget/budget/all/{userId}/{monthYear}")
+    suspend fun getAllBudgetList(
+        @Path("userId") userId : Long,
+        @Path("monthYear") monthYear : String
+    ) : Response<BudgetExpenseSummary?>
 }
