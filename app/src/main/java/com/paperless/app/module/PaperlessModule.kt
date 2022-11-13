@@ -11,6 +11,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import com.paperless.app.BuildConfig
+import com.paperless.app.repo.PaperlessRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -28,4 +29,10 @@ class PaperlessModule {
             .build()
         return retrofit.create(PaperlessService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun providePaperlessRepository(
+        paperlessService: PaperlessService
+    ) : PaperlessRepository = PaperlessRepository(paperlessService)
 }
