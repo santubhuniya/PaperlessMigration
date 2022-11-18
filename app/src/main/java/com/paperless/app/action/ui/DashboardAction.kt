@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -59,46 +60,50 @@ fun PaperlessDashboard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(vertical = 16.dp)
     ) {
         Text(
             text = "Overview",
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.paperless_font.h4,
             color =
-            MaterialTheme.colors.Paperless_Text_Black
+            MaterialTheme.colors.Paperless_Text_Black,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier.size(24.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp)
+                .height(220.dp)
                 .horizontalScroll(rememberScrollState())
         ) {
+            Spacer(modifier = Modifier.size(8.dp))
             DashboardTile(
                 bgColor = MaterialTheme.colors.Paperless_White,
                 title = "Total Income",
                 amount = transactionSummary.totalIncome
             )
-            Spacer(modifier = Modifier.padding(4.dp))
             DashboardTile(
                 bgColor = MaterialTheme.colors.Paperless_Card,
                 title = "Total Expense",
                 amount = transactionSummary.totalExpense
             )
-            Spacer(modifier = Modifier.padding(4.dp))
             DashboardTile(
                 bgColor = MaterialTheme.colors.Paperless_White,
                 title = "Monthly Expense",
                 amount = transactionSummary.monthlyExpense
             )
+            Spacer(modifier = Modifier.size(8.dp))
         }
 
+        Spacer(modifier = Modifier.size(64.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(130.dp)
                 .horizontalScroll(rememberScrollState())
         ) {
+            Spacer(modifier = Modifier.size(8.dp))
             DashboardActionButton(
                 iconId = com.paperless.app.R.drawable.budget_icon,
                 text = "Budget",
@@ -117,16 +122,20 @@ fun PaperlessDashboard(
                 iconId = com.paperless.app.R.drawable.goal_icon,
                 text = "My Goal",
                 color = MaterialTheme.colors.Paperless_White
-            ) {}
+            ) {
+                navHostController.navigate(Screens.GoalSummary.name)
+            }
+            Spacer(modifier = Modifier.size(8.dp))
         }
         Spacer(modifier = Modifier.size(16.dp))
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().
+            padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = "Recent Transactions",
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.paperless_font.h4,
                 color =
                 MaterialTheme.colors.Paperless_Text_Black
             )
@@ -147,11 +156,11 @@ fun PaperlessDashboard(
                 )
             }
         }
-        Spacer(modifier = Modifier.size(24.dp))
-        Column() {
+        Spacer(modifier = Modifier.size(16.dp))
+        Column(modifier = Modifier.padding(16.dp)) {
             transactionSummary.lastFiveTransaction.forEach {
                 TransactionCard(transaction = it)
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.size(24.dp))
             }
         }
 

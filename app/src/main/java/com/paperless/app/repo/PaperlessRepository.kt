@@ -3,6 +3,7 @@ package com.paperless.app.repo
 import arrow.core.Either
 import com.paperless.app.datamodel.BudgetExpenseSummary
 import com.paperless.app.datamodel.DashboardResponse
+import com.paperless.app.datamodel.GoalSumaryResponse
 import com.paperless.app.service.PaperlessService
 
 class PaperlessRepository(val paperlessService: PaperlessService) {
@@ -24,6 +25,14 @@ class PaperlessRepository(val paperlessService: PaperlessService) {
             userId,
             montYear
         ).body()
+    }
+
+    suspend fun getGoalSummary(
+        userId: Long
+    ) : Either<Throwable,GoalSumaryResponse?>
+    = Either.Companion.catch {
+        paperlessService.getAllGoals(userId)
+            .body()
     }
 }
 

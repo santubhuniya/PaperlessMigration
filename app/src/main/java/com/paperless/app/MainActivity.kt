@@ -22,8 +22,11 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.paperless.app.action.ui.BudgetSummaryAction
 import com.paperless.app.action.ui.DashboardUi
+import com.paperless.app.action.ui.GoalSetupAction
 import com.paperless.app.ui.theme.PaperlessTheme
 import com.paperless.app.ui.theme.Paperless_Background
+import com.paperless.app.widget.BottomItem
+import com.paperless.app.widget.PaperlessFooter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,7 +41,12 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Scaffold(
                     topBar = {},
-                    bottomBar = {},
+                    bottomBar = {
+                                PaperlessFooter(
+                                    navHostController = navController,
+                                    bottomItem = BottomItem.Home
+                                )
+                    },
                     backgroundColor = MaterialTheme.colors.Paperless_Background
                 ) {
                     Column(modifier = Modifier
@@ -63,6 +71,10 @@ fun BuildAppRoute(navHostController: NavHostController){
         composable(Screens.BudgetSummary.name){
             BudgetSummaryAction(navHostController = navHostController)
         }
+        composable(Screens.GoalSummary.name){
+            GoalSetupAction(navHostController = navHostController)
+        }
+
     }
 
 }

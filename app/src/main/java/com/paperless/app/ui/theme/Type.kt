@@ -2,12 +2,25 @@ package com.paperless.app.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.paperless.app.R
+
+val fonts = FontFamily(
+    Font(R.font.brandon_bold, weight = FontWeight.Bold),
+    Font(R.font.brandon_reg, weight = FontWeight.Normal),
+    Font(R.font.brandon_light, weight = FontWeight.Light),
+    Font(R.font.brandon_semi_bold, weight = FontWeight.SemiBold),
+    Font(R.font.brandon_italic, style = FontStyle.Italic)
+)
 
 val Typography.paperless_font: Typography
+
     get() = Typography(
+        defaultFontFamily = fonts,
         body1 = TextStyle(
             fontSize = 14.sp,
             lineHeight = 14.sp,

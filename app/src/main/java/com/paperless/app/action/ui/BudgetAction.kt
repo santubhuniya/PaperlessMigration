@@ -1,8 +1,6 @@
 package com.paperless.app.action.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -12,7 +10,7 @@ import androidx.navigation.NavHostController
 import com.paperless.app.datamodel.BudgetSummary
 import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.viewmodel.BudgetViewModel
-import com.paperless.app.widget.BudgetCard
+import com.paperless.app.widget.GenericBudgetRow
 import timber.log.Timber
 
 
@@ -36,14 +34,16 @@ fun BudgetSummaryAction(navHostController: NavHostController){
 
 @Composable
 fun ExpenseBudgetSummaryCard(budgetList : List<BudgetSummary>){
-
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         budgetList.forEach {
-            BudgetCard(it)
-            Spacer(modifier = Modifier.size(16.dp))
+            GenericBudgetRow(budgetName = it.expenseTypeName ?: "",
+                currentAmount = it.expenseAmount,
+                targetAmount = it.budgetAmount
+            )
+            Spacer(modifier = Modifier.size(24.dp))
         }
     }
 

@@ -28,7 +28,10 @@ val Colors.Paperless_Text_Black : Color
     get() = Color(0xFF2F2F2F)
 
 val Colors.Paperless_Light_Card_1 : Color
-    get() = Color(0xFFE6FCF8)
+    get() = Color(0x407FC4DD)
 
 val Colors.Paperless_Light_Card_2 : Color
-    get() = Color(0xFFD7D7F1)
+    get() = Color(0x403C3DBF)
+
+val Colors.Paperless_Light_Card_3 : Color
+    get() = Color(0x40FFFFFF)

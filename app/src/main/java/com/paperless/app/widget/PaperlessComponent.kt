@@ -35,49 +35,63 @@ fun DashboardTile(bgColor: Color, title: String, amount: Float = 0.00F) {
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .width(150.dp)
+            .height(220.dp)
             .padding(8.dp),
         backgroundColor = bgColor
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 24.dp
-                ),
-            horizontalAlignment = Alignment.Start
-        ) {
-            LocalImage(
-                com.paperless.app.R.drawable.wallet,
-                contentDes = "Wallet Image",
-                modifier = Modifier.size(30.dp),
-                color = if (bgColor == MaterialTheme.colors.Paperless_Card) MaterialTheme.colors.Paperless_White
-                else MaterialTheme.colors.Paperless_Text_Grey
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.body1,
-                color = if (bgColor == MaterialTheme.colors.Paperless_Card) MaterialTheme.colors.Paperless_White
-                else MaterialTheme.colors.Paperless_Text_Grey
-            )
-            Spacer(modifier = Modifier.size(40.dp))
-            Text(
-                "$",
-                style = MaterialTheme.typography.body1,
-                color = if (bgColor == MaterialTheme.colors.Paperless_Card) MaterialTheme.colors.Paperless_White
-                else MaterialTheme.colors.Paperless_Text_Black,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(
-                "${amount}",
-                style = MaterialTheme.typography.body1,
-                color = if (bgColor == MaterialTheme.colors.Paperless_Card) MaterialTheme.colors.Paperless_White
-                else MaterialTheme.colors.Paperless_Text_Black,
-                fontWeight = FontWeight.Bold
+            verticalArrangement = Arrangement.SpaceBetween) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 16.dp
+                    ),
+                horizontalAlignment = Alignment.Start
+            ) {
+                LocalImage(
+                    com.paperless.app.R.drawable.wallet,
+                    contentDes = "Wallet Image",
+                    modifier = Modifier.size(30.dp),
+                    color = if (bgColor == MaterialTheme.colors.Paperless_Card) MaterialTheme.colors.Paperless_White
+                    else MaterialTheme.colors.Paperless_Text_Grey
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.paperless_font.h5,
+                    color = if (bgColor == MaterialTheme.colors.Paperless_Card) MaterialTheme.colors.Paperless_White
+                    else MaterialTheme.colors.Paperless_Text_Grey,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 16.dp
+                    ),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    "$",
+                    style = MaterialTheme.typography.paperless_font.h5,
+                    color = if (bgColor == MaterialTheme.colors.Paperless_Card) MaterialTheme.colors.Paperless_White
+                    else MaterialTheme.colors.Paperless_Text_Black,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    "${amount}",
+                    style = MaterialTheme.typography.paperless_font.h5,
+                    color = if (bgColor == MaterialTheme.colors.Paperless_Card) MaterialTheme.colors.Paperless_White
+                    else MaterialTheme.colors.Paperless_Text_Black,
+                    fontWeight = FontWeight.Bold
 
-            )
+                )
+            }
         }
     }
 }
@@ -114,7 +128,8 @@ fun DashboardActionButton(
     Card(
         modifier = Modifier
             .size(height = 120.dp, width = 150.dp)
-            .padding(8.dp).clickable {
+            .padding(8.dp)
+            .clickable {
                 onClick.invoke()
             },
         backgroundColor = color,
@@ -132,7 +147,7 @@ fun DashboardActionButton(
                         .size(34.dp)
                         .background(
                             color = if (color == MaterialTheme.colors.Paperless_Card)
-                                MaterialTheme.colors.Paperless_Light_Card_1
+                                MaterialTheme.colors.Paperless_Light_Card_3
                             else
                                 MaterialTheme.colors.Paperless_Light_Card_2,
                             shape = RoundedCornerShape(10.dp)
@@ -144,7 +159,7 @@ fun DashboardActionButton(
                         contentDes = text,
                         modifier = Modifier.size(18.dp),
                         color = if (color == MaterialTheme.colors.Paperless_Card)
-                            MaterialTheme.colors.Paperless_Card
+                            MaterialTheme.colors.Paperless_White
                         else
                             MaterialTheme.colors.Paperless_Text_Black
                     )
@@ -152,7 +167,7 @@ fun DashboardActionButton(
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.paperless_font.body1,
                     fontWeight = FontWeight.Bold,
                     color = if (color == MaterialTheme.colors.Paperless_Card)
                         MaterialTheme.colors.Paperless_White
@@ -192,14 +207,14 @@ fun TransactionCard(transaction : Transaction){
             Column(horizontalAlignment = Alignment.Start) {
                 Text(
                     text = transaction.txnTitle,
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.paperless_font.body1,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colors.Paperless_Text_Black
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = transaction.txnDate.getDDMMYYYY(),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.paperless_font.body2,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colors.Paperless_Text_Grey
                 )
@@ -209,14 +224,14 @@ fun TransactionCard(transaction : Transaction){
         Column(horizontalAlignment = Alignment.Start) {
             Text(
                 text = transaction.txnAmount.toString(),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.paperless_font.body1,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colors.Paperless_Text_Black
             )
             Spacer(modifier = Modifier.size(4.dp))
             Text(
                 text = transaction.txnTypeName,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.paperless_font.body2,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colors.Paperless_Text_Grey
             )
@@ -230,7 +245,7 @@ fun Long.getDDMMYYYY() : String{
 }
 
 @Composable
-fun BudgetCard(budgetSummary: BudgetSummary){
+fun GenericBudgetRow(budgetName : String,currentAmount : Float?,targetAmount : Float?){
     Row(modifier = Modifier.fillMaxWidth()) {
         Box(modifier = Modifier
             .size(50.dp)
@@ -251,8 +266,8 @@ fun BudgetCard(budgetSummary: BudgetSummary){
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = budgetSummary.expenseTypeName,
-                style = MaterialTheme.typography.body2,
+                text = budgetName,
+                style = MaterialTheme.typography.paperless_font.body2,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colors.Paperless_Text_Black
             )
@@ -264,16 +279,16 @@ fun BudgetCard(budgetSummary: BudgetSummary){
                 ) {
 
                 Text(
-                    text = "${budgetSummary.expenseAmount}",
-                    style = MaterialTheme.typography.body2,
-                    fontWeight = FontWeight.SemiBold,
+                    text = "${currentAmount ?: "0.00"}",
+                    style = MaterialTheme.typography.paperless_font.body2,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colors.Paperless_Text_Grey
                 )
                 Text(
-                    text = "${budgetSummary.budgetAmount ?: "0.00"}",
-                    style = MaterialTheme.typography.body2,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colors.Paperless_Text_Grey
+                    text = "${targetAmount ?: "0.00"}",
+                    style = MaterialTheme.typography.paperless_font.body2,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colors.Paperless_Text_Black
                 )
             }
 

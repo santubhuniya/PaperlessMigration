@@ -50,3 +50,27 @@ data class BudgetSummary(
     @Json(name = "budgetAmount") var budgetAmount: Float?,
     @Json(name = "monthYear") val monthYear : String
 )
+
+@JsonClass(generateAdapter = true)
+data class GoalSummary(
+    @Json(name = "goalSeq") val goalSeq : Long,
+    @Json(name = "goalName") val goalName : String,
+    @Json(name = "goalDesc") val goalDesc : String,
+    @Json(name = "goalStatus") val goalStatus : String,
+    @Json(name = "totalAmount") val totalAmount : Float,
+    @Json(name = "percentageComplete") val percentageComplete: Float
+)
+
+@JsonClass(generateAdapter = true)
+data class GoalSummaryData(
+    @Json(name = "totalGoalAmount") val totalGoalAmount : Float,
+    @Json(name = "goalPaid") val goalPaid : Float,
+    @Json(name = "goalFor") val goalFor : String,
+    @Json(name = "listGoals") val listGoals : List<GoalSummary>?
+)
+
+@JsonClass(generateAdapter = true)
+data class GoalSumaryResponse(
+    @Json(name = "data") val goalSummary : GoalSummaryData,
+    @Json(name = "error") val error: Error?
+)
