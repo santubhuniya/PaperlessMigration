@@ -1,18 +1,24 @@
 package com.paperless.app.widget
 
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.paperless.app.Screens
 import com.paperless.app.ui.theme.*
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PaperlessFooter(navHostController: NavHostController,bottomItem: BottomItem){
+fun PaperlessFooter(
+                    navHostController: NavHostController,
+                    bottomItem: BottomItem,
+                    modalBottomSheetState: ModalBottomSheetState
+
+){
 
     val bottomItems = listOf<BottomItem>(
         BottomItem.Home,
@@ -26,6 +32,7 @@ fun PaperlessFooter(navHostController: NavHostController,bottomItem: BottomItem)
         contentColor = MaterialTheme.colors.Paperless_Text_Black,
         elevation = 5.dp
     ) {
+        val coroutineScope = rememberCoroutineScope()
         bottomItems.forEach {
             BottomNavigationItem(
                 selected = bottomItem == it,
@@ -37,12 +44,12 @@ fun PaperlessFooter(navHostController: NavHostController,bottomItem: BottomItem)
                                 saveState = false
                             }
                         }
-//                        BottomItem.Home.label -> navHostController.navigate(Screens.Dashboard().name){
-//                            popUpTo(Screens.Dashboard().name){
-//                                inclusive = true
-//                                saveState = false
-//                            }
-//                        }
+                        BottomItem.AddButton.label -> coroutineScope.launch {
+                            if(!modalBottomSheetState.isVisible) {
+                                modalBottomSheetState.show()
+                            }
+                        }
+
 //                        BottomItem.ShoppingList.label -> navHostController.navigate(
 //                            Screens.ShoppingList().name,
 //                        ){
@@ -94,12 +101,12 @@ sealed class BottomItem(val icon: Int,val selectedIcon :Int, val label: String) 
     object Statistics : BottomItem(
         icon = com.paperless.app.R.drawable.outline_stat,
         selectedIcon = com.paperless.app.R.drawable.solid_stat,
-        label = "Shopping")
+        label = "Statistics")
 
     object AddButton : BottomItem(
         icon = com.paperless.app.R.drawable.add_solid,
         selectedIcon = com.paperless.app.R.drawable.add_solid,
-        label = "Shopping")
+        label = "AddNew")
 
     object Savings : BottomItem(
         icon = com.paperless.app.R.drawable.paperless_wallet_outline,

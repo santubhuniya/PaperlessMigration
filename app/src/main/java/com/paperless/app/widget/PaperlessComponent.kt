@@ -2,14 +2,20 @@ package com.paperless.app.widget
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.R
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +31,7 @@ import com.paperless.app.datamodel.Transaction
 import com.paperless.app.ui.theme.*
 import timber.log.Timber
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.*
 
 
@@ -40,7 +47,8 @@ fun DashboardTile(bgColor: Color, title: String, amount: Float = 0.00F) {
         backgroundColor = bgColor
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween) {
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,7 +131,7 @@ fun DashboardActionButton(
     iconId: Int,
     text: String,
     color: Color,
-    onClick : ()->Unit
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -182,19 +190,24 @@ fun DashboardActionButton(
 }
 
 @Composable
-fun TransactionCard(transaction : Transaction){
+fun TransactionCard(transaction: Transaction) {
 
-    Row(modifier = Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.SpaceBetween
-        ){
-        
-        Row(){
-            Box(modifier = Modifier
-                .size(50.dp)
-                .background(
-                    shape = RoundedCornerShape(15.dp),
-                    color = MaterialTheme.colors.Paperless_Light_Card_1
-                ),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Row() {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .background(
+                        shape = RoundedCornerShape(15.dp),
+                        color = MaterialTheme.colors.Paperless_Light_Card_1
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 LocalImage(
@@ -204,7 +217,10 @@ fun TransactionCard(transaction : Transaction){
                 )
             }
             Spacer(modifier = Modifier.size(16.dp))
-            Column(horizontalAlignment = Alignment.Start) {
+            Column(
+                modifier = Modifier.height(50.dp),
+                horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center) {
                 Text(
                     text = transaction.txnTitle,
                     style = MaterialTheme.typography.paperless_font.body1,
@@ -239,20 +255,25 @@ fun TransactionCard(transaction : Transaction){
     }
 }
 
-fun Long.getDDMMYYYY() : String{
+fun Long.getDDMMYYYY(): String {
     val simpleDateFormat = SimpleDateFormat("dd MMM yyyy")
+    return simpleDateFormat.format(Date(this))
+}
+fun Long.getMMMYYYY() : String{
+    val simpleDateFormat = SimpleDateFormat(" MMM yyyy")
     return simpleDateFormat.format(Date(this))
 }
 
 @Composable
-fun GenericBudgetRow(budgetName : String,currentAmount : Float?,targetAmount : Float?){
+fun GenericBudgetRow(budgetName: String, currentAmount: Float?, targetAmount: Float?) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        Box(modifier = Modifier
-            .size(50.dp)
-            .background(
-                shape = RoundedCornerShape(15.dp),
-                color = MaterialTheme.colors.Paperless_Light_Card_1
-            ),
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .background(
+                    shape = RoundedCornerShape(15.dp),
+                    color = MaterialTheme.colors.Paperless_Light_Card_1
+                ),
             contentAlignment = Alignment.Center
         ) {
             LocalImage(
@@ -262,7 +283,8 @@ fun GenericBudgetRow(budgetName : String,currentAmount : Float?,targetAmount : F
             )
         }
         Spacer(modifier = Modifier.size(16.dp))
-        Column(modifier = Modifier.fillMaxWidth(),
+        Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
@@ -274,9 +296,10 @@ fun GenericBudgetRow(budgetName : String,currentAmount : Float?,targetAmount : F
             Spacer(modifier = Modifier.size(8.dp))
             ProgressBarWidget(.7)
             Spacer(modifier = Modifier.size(8.dp))
-            Row(modifier =  Modifier.fillMaxWidth(),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
-                ) {
+            ) {
 
                 Text(
                     text = "${currentAmount ?: "0.00"}",
@@ -296,6 +319,7 @@ fun GenericBudgetRow(budgetName : String,currentAmount : Float?,targetAmount : F
     }
 
 }
+
 @Composable
 fun ProgressBarWidget(progress: Double) {
     Timber.d("progress = $progress")
@@ -310,3 +334,337 @@ fun ProgressBarWidget(progress: Double) {
         backgroundColor = MaterialTheme.colors.Paperless_Light_Card_1
     )
 }
+
+
+//calendar component
+enum class CalendarType {
+    Monthly,
+    Weekly
+}
+
+@Composable
+fun PaperlessCalendar(
+    calendarType: CalendarType = CalendarType.Weekly
+) {
+
+    val selectedDate = remember {
+        mutableStateOf(Calendar.getInstance().timeInMillis)
+    }
+
+    val monthYear = remember{
+        mutableStateOf(Calendar.getInstance().timeInMillis.getMMMYYYY())
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+        ,
+        shape = RoundedCornerShape(16.dp),
+        elevation = 5.dp
+
+    ) {
+
+        val calendarMap = mutableMapOf<Int, Long>()
+
+        val calendar = Calendar.getInstance()
+        calendar.firstDayOfWeek = Calendar.SUNDAY
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
+        val startDay = calendar.get(Calendar.DATE)
+        Timber.d("startDate - $startDay")
+        calendar.set(Calendar.DATE, startDay)
+        calendarMap.put(1, calendar.timeInMillis)
+        monthYear.value = calendar.timeInMillis.getMMMYYYY()
+        for (i in 2..7) {
+            calendar.set(
+                Calendar.DATE, calendar.get(Calendar.DATE) + 1
+            )
+            calendarMap.put(i, calendar.timeInMillis)
+        }
+        Column(modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.size(24.dp))
+            Row() {
+                LocalImage(
+                    imageId = com.paperless.app.R.drawable.paperless_calendar,
+                    contentDes = "Calendar icon",
+                    color = MaterialTheme.colors.Paperless_Button
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    monthYear.value,
+                    style = MaterialTheme.typography.paperless_font.h5,
+                    color = MaterialTheme.colors.Paperless_Button,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                calendarMap.forEach {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Spacer(modifier = Modifier.size(16.dp))
+                        Text(
+                            text = when (it.key) {
+                                1 -> "S"
+                                2 -> "M"
+                                3 -> "T"
+                                4 -> "W"
+                                5 -> "T"
+                                6 -> "F"
+                                7 -> "S"
+                                else -> "S"
+                            },
+
+                            style = MaterialTheme.typography.paperless_font.body1,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colors.Paperless_Text_Grey
+                        )
+                        Spacer(modifier = Modifier.size(24.dp))
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = if (isSelectedDate(it.value, selectedDate.value))
+                                        MaterialTheme.colors.Paperless_Button
+                                    else Color.Transparent,
+                                    shape = CircleShape
+                                )
+                        ) {
+
+
+                            Text(
+                                text = "${it.value.getDateFromTime()}",
+                                style = MaterialTheme.typography.paperless_font.body1,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isSelectedDate(it.value, selectedDate.value))
+                                    MaterialTheme.colors.Paperless_White
+                                else
+                                    MaterialTheme.colors.Paperless_Text_Black,
+                                modifier = Modifier.clickable {
+                                    selectedDate.value = it.value
+                                }
+
+                            )
+                        }
+                        Spacer(modifier = Modifier.size(16.dp))
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+fun isSelectedDate(date1: Long, date2: Long): Boolean {
+    return date1.getDDMMYYYY() == date2.getDDMMYYYY()
+}
+
+
+
+fun Long.getDateFromTime(): Int {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = this
+    return calendar.get(Calendar.DATE)
+}
+
+@Composable
+fun PaperlessAmountDisplay(amount: Float) {
+    Box(
+        modifier = Modifier
+            .size(200.dp)
+            .background(
+                color = MaterialTheme.colors.Paperless_Light_Card_1,
+                shape = CircleShape
+            ), contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(180.dp)
+                .background(
+                    color = MaterialTheme.colors.Paperless_Card,
+                    shape = CircleShape
+                ), contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "$ $amount",
+                style = MaterialTheme.typography.paperless_font.h3,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.Paperless_White
+            )
+        }
+    }
+}
+
+@Composable
+fun TextInput(label: String,
+              hint : String,
+              inputText : MutableState<String>){
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.paperless_font.body1,
+            color =
+            MaterialTheme.colors.Paperless_Text_Grey,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+
+        OutlinedTextField(
+            value = inputText.value,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            placeholder = {
+                Text(
+                    text = hint,
+                    style = MaterialTheme.typography.paperless_font.body2
+                )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                cursorColor = MaterialTheme.colors.Paperless_Text_Black,
+                backgroundColor = MaterialTheme.colors.Paperless_input_background,
+                focusedBorderColor = MaterialTheme.colors.Paperless_Button,
+                unfocusedBorderColor = MaterialTheme.colors.Paperless_input_background
+            ),
+            onValueChange = { value ->
+                inputText.value = value
+            },
+            shape = RoundedCornerShape(10.dp),
+            textStyle = MaterialTheme.typography.paperless_font.body1,
+            singleLine = true
+        )
+    }
+}
+
+@Composable
+fun SearchInput(
+    label: String,
+    inputText : MutableState<String>,
+    suffixClick : ()->Unit
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .background(
+                color = MaterialTheme.colors.Paperless_Light_Card_3,
+                shape = RoundedCornerShape(5.dp)
+            ),
+        verticalArrangement = Arrangement.Center
+
+    ) {
+        BasicTextField(
+            value = inputText.value,
+            onValueChange = { value ->
+                inputText.value = value
+            },
+            maxLines = 1,
+            textStyle = MaterialTheme.typography.paperless_font.body1,
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 8.dp,
+                            vertical = 8.dp
+                        )
+                        .offset(x = 8.dp),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            modifier = Modifier,
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            if (inputText.value.isEmpty()) {
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.paperless_font.body2,
+                                    color = MaterialTheme.colors.Paperless_Text_Black
+
+                                )
+                            }
+                        }
+
+                        if (inputText.value.length > 0) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Clear",
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable {
+                                        inputText.value = ""
+                                    },
+                                tint = MaterialTheme.colors.Paperless_Text_Grey
+                            )
+                        }
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Spacer(modifier = Modifier.size(0.dp))
+                        innerTextField()
+                    }
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun SolidButton(
+    name : String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+){
+    Button(
+        modifier = modifier.height(45.dp)
+            .width(170.dp)
+            .clip(RoundedCornerShape(60)),
+        onClick = {
+            onClick.invoke()
+        },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.Paperless_Button,
+            contentColor = MaterialTheme.colors.Paperless_White
+        ),
+        elevation = ButtonDefaults.elevation(
+            defaultElevation = 1.dp,
+            pressedElevation = 2.dp,
+            disabledElevation = 0.dp
+        )
+    ){
+        Text(
+            text = name,
+            style = MaterialTheme.typography.paperless_font.body1,
+            color = MaterialTheme.colors.Paperless_White,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+@Composable
+fun PageHeader(label : String){
+    Text(
+        text = label,
+        style = MaterialTheme.typography.paperless_font.h4,
+        color =
+        MaterialTheme.colors.Paperless_Text_Black,
+        fontWeight = FontWeight.Normal,
+        modifier = Modifier.padding(horizontal = 16.dp)
+    )
+    Spacer(modifier = Modifier.size(24.dp))
+}
+

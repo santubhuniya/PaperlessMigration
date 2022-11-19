@@ -22,7 +22,10 @@ import com.paperless.app.ui.theme.*
 import com.paperless.app.viewmodel.GoalViewModel
 import com.paperless.app.widget.GenericBudgetRow
 import com.paperless.app.widget.LocalImage
+import com.paperless.app.widget.PageHeader
+import com.paperless.app.widget.getMMMYYYY
 import timber.log.Timber
+import java.util.*
 
 @Composable
 fun GoalSetupAction(navHostController: NavHostController){
@@ -44,6 +47,8 @@ fun GoalSetupAction(navHostController: NavHostController){
 fun ShowGoalCard(goalSummaryData: GoalSummaryData){
 
     Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(Modifier.size(16.dp))
+        PageHeader(label = "Goal Summary")
         // make top card
         Card(
             modifier = Modifier
@@ -57,6 +62,7 @@ fun ShowGoalCard(goalSummaryData: GoalSummaryData){
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)) {
+
                 Row(modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -68,7 +74,7 @@ fun ShowGoalCard(goalSummaryData: GoalSummaryData){
                         )
                         Spacer(modifier = Modifier.size(8.dp))
                         Text(
-                            "July 2022",
+                            Calendar.getInstance().timeInMillis.getMMMYYYY(),
                             style = MaterialTheme.typography.paperless_font.h5,
                             color =
                             MaterialTheme.colors.Paperless_Text_Black,
@@ -170,7 +176,9 @@ fun ShowGoalCard(goalSummaryData: GoalSummaryData){
         }
         Spacer(Modifier.size(16.dp))
 
-        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)) {
             goalSummaryData.listGoals?.forEach {
                 GenericBudgetRow(
                     budgetName = it.goalName,

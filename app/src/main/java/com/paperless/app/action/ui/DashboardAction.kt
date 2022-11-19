@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -21,10 +22,7 @@ import com.paperless.app.datamodel.TransactionSummary
 import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.ui.theme.*
 import com.paperless.app.viewmodel.DashboardViewModel
-import com.paperless.app.widget.DashboardActionButton
-import com.paperless.app.widget.DashboardTile
-import com.paperless.app.widget.LocalImage
-import com.paperless.app.widget.TransactionCard
+import com.paperless.app.widget.*
 import timber.log.Timber
 import java.lang.Error
 import java.util.*
@@ -62,15 +60,7 @@ fun PaperlessDashboard(
             .fillMaxWidth()
             .padding(vertical = 16.dp)
     ) {
-        Text(
-            text = "Overview",
-            style = MaterialTheme.typography.paperless_font.h4,
-            color =
-            MaterialTheme.colors.Paperless_Text_Black,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        Spacer(modifier = Modifier.size(24.dp))
+        PageHeader("Overview")
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -96,71 +86,77 @@ fun PaperlessDashboard(
             Spacer(modifier = Modifier.size(8.dp))
         }
 
-        Spacer(modifier = Modifier.size(64.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(130.dp)
-                .horizontalScroll(rememberScrollState())
+        Spacer(modifier = Modifier.size(32.dp))
+        Column(
+            modifier = Modifier.background(color = MaterialTheme.colors.Paperless_White,
+            shape = RoundedCornerShape(topStartPercent = 5, topEndPercent = 5))
         ) {
-            Spacer(modifier = Modifier.size(8.dp))
-            DashboardActionButton(
-                iconId = com.paperless.app.R.drawable.budget_icon,
-                text = "Budget",
-                color = MaterialTheme.colors.Paperless_Card
-            ) {
-                navHostController.navigate(Screens.BudgetSummary.name)
-            }
-            Spacer(modifier = Modifier.size(4.dp))
-            DashboardActionButton(
-                iconId = com.paperless.app.R.drawable.reminder,
-                text = "Reminder",
-                color = MaterialTheme.colors.Paperless_White
-            ) {}
-            Spacer(modifier = Modifier.size(4.dp))
-            DashboardActionButton(
-                iconId = com.paperless.app.R.drawable.goal_icon,
-                text = "My Goal",
-                color = MaterialTheme.colors.Paperless_White
-            ) {
-                navHostController.navigate(Screens.GoalSummary.name)
-            }
-            Spacer(modifier = Modifier.size(8.dp))
-        }
-        Spacer(modifier = Modifier.size(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth().
-            padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Recent Transactions",
-                style = MaterialTheme.typography.paperless_font.h4,
-                color =
-                MaterialTheme.colors.Paperless_Text_Black
-            )
-            Box(
+            Spacer(modifier = Modifier.size(32.dp))
+            Row(
                 modifier = Modifier
-                    .width(50.dp)
-                    .height(40.dp)
-                    .background(
-                        color = MaterialTheme.colors.Paperless_Light_Card_2,
-                        shape = RoundedCornerShape(15.dp)
-                    ),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .height(130.dp)
+                    .horizontalScroll(rememberScrollState())
             ) {
-                LocalImage(
-                    imageId = com.paperless.app.R.drawable.more_icon,
-                    contentDes = "more transaction",
-                    color = MaterialTheme.colors.Paperless_Button
-                )
+                Spacer(modifier = Modifier.size(8.dp))
+                DashboardActionButton(
+                    iconId = com.paperless.app.R.drawable.budget_icon,
+                    text = "Budget",
+                    color = MaterialTheme.colors.Paperless_Card
+                ) {
+                    navHostController.navigate(Screens.BudgetSummary.name)
+                }
+                Spacer(modifier = Modifier.size(4.dp))
+                DashboardActionButton(
+                    iconId = com.paperless.app.R.drawable.reminder,
+                    text = "Reminder",
+                    color = MaterialTheme.colors.Paperless_White
+                ) {}
+                Spacer(modifier = Modifier.size(4.dp))
+                DashboardActionButton(
+                    iconId = com.paperless.app.R.drawable.goal_icon,
+                    text = "My Goal",
+                    color = MaterialTheme.colors.Paperless_White
+                ) {
+                    navHostController.navigate(Screens.GoalSummary.name)
+                }
+                Spacer(modifier = Modifier.size(8.dp))
             }
-        }
-        Spacer(modifier = Modifier.size(16.dp))
-        Column(modifier = Modifier.padding(16.dp)) {
-            transactionSummary.lastFiveTransaction.forEach {
-                TransactionCard(transaction = it)
-                Spacer(modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.size(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Recent Transactions",
+                    style = MaterialTheme.typography.paperless_font.h5,
+                    color =
+                    MaterialTheme.colors.Paperless_Text_Black,
+                    fontWeight = FontWeight.Bold
+                )
+                Box(
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(40.dp)
+                        .background(
+                            color = MaterialTheme.colors.Paperless_Light_Card_2,
+                            shape = RoundedCornerShape(15.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LocalImage(
+                        imageId = com.paperless.app.R.drawable.more_icon,
+                        contentDes = "more transaction",
+                        color = MaterialTheme.colors.Paperless_Button
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(16.dp))
+            Column(modifier = Modifier.padding(16.dp)) {
+                transactionSummary.lastFiveTransaction.forEach {
+                    TransactionCard(transaction = it)
+                    Spacer(modifier = Modifier.size(24.dp))
+                }
             }
         }
 

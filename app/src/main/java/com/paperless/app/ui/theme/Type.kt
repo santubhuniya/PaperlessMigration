@@ -10,11 +10,11 @@ import androidx.compose.ui.unit.sp
 import com.paperless.app.R
 
 val fonts = FontFamily(
-    Font(R.font.brandon_bold, weight = FontWeight.Bold),
-    Font(R.font.brandon_reg, weight = FontWeight.Normal),
-    Font(R.font.brandon_light, weight = FontWeight.Light),
-    Font(R.font.brandon_semi_bold, weight = FontWeight.SemiBold),
-    Font(R.font.brandon_italic, style = FontStyle.Italic)
+    Font(R.font.uniform_bold, weight = FontWeight.Bold),
+    Font(R.font.uniform_regular, weight = FontWeight.Normal),
+    Font(R.font.uniform_light, weight = FontWeight.Light),
+    Font(R.font.unitform_semibold, weight = FontWeight.SemiBold),
+    Font(R.font.uniform_italic, style = FontStyle.Italic)
 )
 
 val Typography.paperless_font: Typography
@@ -38,6 +38,11 @@ val Typography.paperless_font: Typography
             lineHeight = 25.sp,
             letterSpacing = 0.sp
 
+        ),
+        h3 = TextStyle(
+            fontSize = 32.sp,
+            lineHeight = 32.sp,
+            letterSpacing = 0.sp
         ),
         h5 = TextStyle(
             fontSize = 18.sp,
