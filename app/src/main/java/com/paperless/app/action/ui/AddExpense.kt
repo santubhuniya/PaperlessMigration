@@ -12,20 +12,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.paperless.app.datamodel.NewTransactionRequest
 import com.paperless.app.ui.theme.Paperless_Text_Black
 import com.paperless.app.ui.theme.Paperless_Text_Grey
 import com.paperless.app.ui.theme.paperless_font
+import com.paperless.app.viewmodel.TransactionViewModel
 import com.paperless.app.widget.*
+import java.util.*
 
 @Composable
 fun AddExpenseCard(navHostController: NavHostController) {
+
+    val transactionViewModel : TransactionViewModel = hiltViewModel()
+    val addTransaction = transactionViewModel.addATransaction.value
 
     val expenseTitle = remember {
         mutableStateOf("")
     }
     val expenseAmount = remember {
         mutableStateOf("0.00")
+    }
+
+    val paidBy = remember {
+        mutableStateOf(false)
     }
     // add expense
     Column(modifier = Modifier.fillMaxSize()) {
@@ -72,7 +83,11 @@ fun AddExpenseCard(navHostController: NavHostController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, MaterialTheme.colors.Paperless_Text_Grey, RoundedCornerShape(10.dp))
+                    .border(
+                        1.dp,
+                        MaterialTheme.colors.Paperless_Text_Grey,
+                        RoundedCornerShape(10.dp)
+                    )
                     .height(45.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -96,7 +111,22 @@ fun AddExpenseCard(navHostController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                SolidButton("Save Expense") {}
+                SolidButton("Save Expense") {
+                    transactionViewModel.addNewTranscation(
+                        newTransactionRequest = NewTransactionRequest(
+                            userId = 3,
+                            amount = expenseAmount.value.toFloat(),
+                            transactionDate = Date().time,
+                            transactionTypeId = 2,
+                            transactionTypeLevel = 0,
+                            transactionMode = "debit",
+                            transactionSource = "manual",
+                            paidBy = if(paidBy.value) "cash" else "online",
+                            isSourceCorrect = true,
+                            transactionTitle = expenseTitle.value
+                        )
+                    )
+                }
             }
 
         }

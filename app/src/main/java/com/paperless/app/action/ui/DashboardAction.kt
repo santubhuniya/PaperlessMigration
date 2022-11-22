@@ -1,11 +1,9 @@
 package com.paperless.app.action.ui
 
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -17,14 +15,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.github.mikephil.charting.charts.PieChart
 import com.paperless.app.Screens
 import com.paperless.app.datamodel.TransactionSummary
 import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.ui.theme.*
 import com.paperless.app.viewmodel.DashboardViewModel
 import com.paperless.app.widget.*
+import com.paperless.app.widget.chart.BarChartCard
+import com.paperless.app.widget.chart.BarChartData
+import com.paperless.app.widget.chart.PieChartCard
+import com.paperless.app.widget.chart.PieChartData
 import timber.log.Timber
-import java.lang.Error
 import java.util.*
 
 
@@ -72,24 +74,26 @@ fun PaperlessDashboard(
                 bgColor = MaterialTheme.colors.Paperless_White,
                 title = "Total Income",
                 amount = transactionSummary.totalIncome
-            )
+            ){}
             DashboardTile(
                 bgColor = MaterialTheme.colors.Paperless_Card,
                 title = "Total Expense",
                 amount = transactionSummary.totalExpense
-            )
+            ){}
             DashboardTile(
                 bgColor = MaterialTheme.colors.Paperless_White,
                 title = "Monthly Expense",
                 amount = transactionSummary.monthlyExpense
-            )
+            ){
+                navHostController.navigate(Screens.MonthlyExpenseDet.name)
+            }
             Spacer(modifier = Modifier.size(8.dp))
         }
 
         Spacer(modifier = Modifier.size(32.dp))
         Column(
             modifier = Modifier.background(color = MaterialTheme.colors.Paperless_White,
-            shape = RoundedCornerShape(topStartPercent = 5, topEndPercent = 5))
+            shape = RoundedCornerShape(topStartPercent = 0, topEndPercent = 0))
         ) {
             Spacer(modifier = Modifier.size(32.dp))
             Row(
@@ -124,7 +128,9 @@ fun PaperlessDashboard(
             }
             Spacer(modifier = Modifier.size(16.dp))
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(

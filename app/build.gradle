@@ -52,6 +52,7 @@ android {
     }
 }
 
+
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -107,7 +108,9 @@ dependencies {
 
     //chart android
 
-    //implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    //implementation("com.himanshoe:charty:1.0.1")
+    //implementation 'com.github.AAChartModel:AAChartCore-Kotlin:7.1.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

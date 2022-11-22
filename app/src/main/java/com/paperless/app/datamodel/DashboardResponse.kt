@@ -74,3 +74,91 @@ data class GoalSumaryResponse(
     @Json(name = "data") val goalSummary : GoalSummaryData,
     @Json(name = "error") val error: Error?
 )
+
+// monthly expense details
+
+@JsonClass(generateAdapter = true)
+data class MonthlyExpenseResponse(
+    @Json(name = "data") val expenseDetails : MonthlyExpenseDetails,
+    @Json(name = "error") val error: Error?
+)
+
+@JsonClass(generateAdapter = true)
+data class MonthlyExpenseDetails(
+    @Json(name = "totalExpense") val totalExpense: Float,
+    @Json(name = "totalBudget") val totalBudget: Float,
+    @Json(name = "listExpenseCategory") var listExpenseCategory: List<ExpenseCategory>?,
+    @Json(name = "listTopSpending") var listTopSpending: List<TopSpending>?
+)
+@JsonClass(generateAdapter = true)
+data class ExpenseCategory(
+    @Json(name = "categoryId") val categoryId : Long,
+    @Json(name = "categoryName") var categoryName : String,
+    @Json(name = "amount") val amount : Float
+)
+@JsonClass(generateAdapter = true)
+data class TopSpending(
+    @Json(name = "expenseId") val expenseId: Long,
+    @Json(name = "expenseName") val expenseName : String,
+    @Json(name = "amount") val amount: Float,
+    @Json(name = "icon") val icon : String?,
+    @Json(name = "date") val date : Long,
+    @Json(name = "categoryName") val categoryName: String
+)
+
+// chart summary / statistics
+
+@JsonClass(generateAdapter = true)
+data class ChartRequest(
+    @Json(name = "month") val month : Int,
+    @Json(name = "year") val year : Int,
+    @Json(name = "chartType") val chartType : String, //weekly, monthly, yearly
+    @Json(name = "userId") val userId: Long,
+    @Json(name = "week") val week : Int
+)
+
+@JsonClass(generateAdapter = true)
+data class ChartResponse(
+    @Json(name = "data") val chartSummary : ChartSummary,
+    @Json(name = "error") val error: Error?
+)
+
+@JsonClass(generateAdapter = true)
+data class ChartSummary(
+    @Json(name = "month") val month : Int,
+    @Json(name = "year") val year : Int,
+    @Json(name = "chartType") val chartType : String, //monthly, weekly, yearly
+    @Json(name = "categoryList") var categoryList : List<ExpenseCategory>?, //pie chart for the chart type,
+    @Json(name = "chartDataList") var chartDataList : List<ChartData>?
+)
+
+@JsonClass(generateAdapter = true)
+data class ChartData(
+    @Json(name = "xData") val xData : String,
+    @Json(name = "yExpense") val yExpense : Float = 0f,
+    @Json(name = "yIncome") val yIncome : Float = 0f,
+    @Json(name = "yBudget") val yBudget : Float = 0f
+)
+
+//add new transaction
+@JsonClass(generateAdapter = true)
+data class NewTransactionResponse(
+    @Json(name = "data") val transactionId : Long,
+    @Json(name = "error") val error: Error?
+)
+
+@JsonClass(generateAdapter = true)
+data class NewTransactionRequest(
+    @Json(name = "userId") val userId : Long,
+    @Json(name = "amount") val amount : Float,
+    @Json(name = "transactionDate") val transactionDate : Long?,
+    @Json(name = "transactionType") val transactionTypeId : Long,
+    @Json(name = "transactionTypeLevel") val transactionTypeLevel : Int,
+    @Json(name = "transactionMode") val transactionMode : String, //.debit , credit
+    @Json(name = "transactionSource") val transactionSource : String, //sms manual
+    @Json(name = "paidBy") val paidBy : String, // cash, online
+    @Json(name = "isSourceCorrect") val isSourceCorrect : Boolean,
+    @Json(name = "transactionTitle") val transactionTitle : String,
+    @Json(name = "budgetId") val budgetId : Int = 0
+)
+

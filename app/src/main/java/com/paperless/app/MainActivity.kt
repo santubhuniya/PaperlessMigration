@@ -170,6 +170,10 @@ fun BuildAppRoute(navHostController: NavHostController) {
             AddIncomeCard(navHostController = navHostController)
         }
 
+        composable(Screens.MonthlyExpenseDet.name) {
+            MonthlyExpenseDetails(navHostController = navHostController)
+        }
+
 
     }
 
@@ -187,6 +191,7 @@ sealed class Screens(val name: String) {
     object AddNewGoal : Screens("add-new-goal")
     object Login : Screens("login")
     object Registration : Screens("registration")
+    object MonthlyExpenseDet : Screens("monthly-expense")
 
 }
 

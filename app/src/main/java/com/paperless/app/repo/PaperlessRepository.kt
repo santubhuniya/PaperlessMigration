@@ -1,9 +1,7 @@
 package com.paperless.app.repo
 
 import arrow.core.Either
-import com.paperless.app.datamodel.BudgetExpenseSummary
-import com.paperless.app.datamodel.DashboardResponse
-import com.paperless.app.datamodel.GoalSumaryResponse
+import com.paperless.app.datamodel.*
 import com.paperless.app.service.PaperlessService
 
 class PaperlessRepository(val paperlessService: PaperlessService) {
@@ -34,6 +32,27 @@ class PaperlessRepository(val paperlessService: PaperlessService) {
         paperlessService.getAllGoals(userId)
             .body()
     }
+
+    suspend fun getMonthlyExpenseDetails(userId: Long, montYear: String)
+    : Either<Throwable, MonthlyExpenseResponse?>
+    = Either.catch {
+        paperlessService.getMonthlyTransactionDetails(userId,montYear).body()
+    }
+
+    suspend fun getChartSummary(
+        chartRequest: ChartRequest
+    ) : Either<Throwable,ChartResponse?>
+    = Either.catch {
+        paperlessService.getChartSummary(chartRequest = chartRequest).body()
+    }
+
+    suspend fun addNewTransaction(
+        newTransactionRequest: NewTransactionRequest
+    ) : Either<Throwable,NewTransactionResponse?>
+    = Either.catch {
+        paperlessService.addNewTransaction(newTransactionRequest = newTransactionRequest).body()
+    }
+
 }
 
 sealed class NetworkResponse<out T : Any?> {

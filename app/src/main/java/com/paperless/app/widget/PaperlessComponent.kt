@@ -36,18 +36,22 @@ import java.util.*
 
 
 @Composable
-fun DashboardTile(bgColor: Color, title: String, amount: Float = 0.00F) {
+fun DashboardTile(bgColor: Color, title: String, amount: Float = 0.00F, clickFunction: () -> Unit) {
     Card(
         elevation = 5.dp,
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .width(150.dp)
             .height(220.dp)
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable {
+                clickFunction.invoke()
+            },
         backgroundColor = bgColor
     ) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween
+
         ) {
             Column(
                 modifier = Modifier
@@ -71,7 +75,7 @@ fun DashboardTile(bgColor: Color, title: String, amount: Float = 0.00F) {
                     style = MaterialTheme.typography.paperless_font.h5,
                     color = if (bgColor == MaterialTheme.colors.Paperless_Card) MaterialTheme.colors.Paperless_White
                     else MaterialTheme.colors.Paperless_Text_Grey,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
             Column(
@@ -220,7 +224,8 @@ fun TransactionCard(transaction: Transaction) {
             Column(
                 modifier = Modifier.height(50.dp),
                 horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center) {
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = transaction.txnTitle,
                     style = MaterialTheme.typography.paperless_font.body1,
@@ -241,7 +246,7 @@ fun TransactionCard(transaction: Transaction) {
             Text(
                 text = transaction.txnAmount.toString(),
                 style = MaterialTheme.typography.paperless_font.body1,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colors.Paperless_Text_Black
             )
             Spacer(modifier = Modifier.size(4.dp))
@@ -259,7 +264,8 @@ fun Long.getDDMMYYYY(): String {
     val simpleDateFormat = SimpleDateFormat("dd MMM yyyy")
     return simpleDateFormat.format(Date(this))
 }
-fun Long.getMMMYYYY() : String{
+
+fun Long.getMMMYYYY(): String {
     val simpleDateFormat = SimpleDateFormat(" MMM yyyy")
     return simpleDateFormat.format(Date(this))
 }
@@ -351,15 +357,14 @@ fun PaperlessCalendar(
         mutableStateOf(Calendar.getInstance().timeInMillis)
     }
 
-    val monthYear = remember{
+    val monthYear = remember {
         mutableStateOf(Calendar.getInstance().timeInMillis.getMMMYYYY())
     }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-        ,
+            .padding(16.dp),
         shape = RoundedCornerShape(16.dp),
         elevation = 5.dp
 
@@ -381,7 +386,8 @@ fun PaperlessCalendar(
             )
             calendarMap.put(i, calendar.timeInMillis)
         }
-        Column(modifier = Modifier.fillMaxWidth(),
+        Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.size(24.dp))
@@ -465,7 +471,6 @@ fun isSelectedDate(date1: Long, date2: Long): Boolean {
 }
 
 
-
 fun Long.getDateFromTime(): Int {
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = this
@@ -501,9 +506,11 @@ fun PaperlessAmountDisplay(amount: Float) {
 }
 
 @Composable
-fun TextInput(label: String,
-              hint : String,
-              inputText : MutableState<String>){
+fun TextInput(
+    label: String,
+    hint: String,
+    inputText: MutableState<String>
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label,
@@ -544,8 +551,8 @@ fun TextInput(label: String,
 @Composable
 fun SearchInput(
     label: String,
-    inputText : MutableState<String>,
-    suffixClick : ()->Unit
+    inputText: MutableState<String>,
+    suffixClick: () -> Unit
 ) {
 
     Column(
@@ -625,12 +632,13 @@ fun SearchInput(
 
 @Composable
 fun SolidButton(
-    name : String,
+    name: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
-){
+) {
     Button(
-        modifier = modifier.height(45.dp)
+        modifier = modifier
+            .height(45.dp)
             .width(170.dp)
             .clip(RoundedCornerShape(60)),
         onClick = {
@@ -645,7 +653,7 @@ fun SolidButton(
             pressedElevation = 2.dp,
             disabledElevation = 0.dp
         )
-    ){
+    ) {
         Text(
             text = name,
             style = MaterialTheme.typography.paperless_font.body1,
@@ -656,7 +664,7 @@ fun SolidButton(
 }
 
 @Composable
-fun PageHeader(label : String){
+fun PageHeader(label: String) {
     Text(
         text = label,
         style = MaterialTheme.typography.paperless_font.h4,
