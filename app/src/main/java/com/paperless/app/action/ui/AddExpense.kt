@@ -130,7 +130,7 @@ fun AddExpenseCard(navHostController: NavHostController) {
             }
 
         }
-
+        Spacer(modifier = Modifier.size(64.dp))
 
     }
 }

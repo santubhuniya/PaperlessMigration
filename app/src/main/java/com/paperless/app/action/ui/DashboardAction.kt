@@ -158,6 +158,7 @@ fun PaperlessDashboard(
                 }
             }
             Spacer(modifier = Modifier.size(16.dp))
+            // show line chart for expense and income for last 15 days
             Column(modifier = Modifier.padding(16.dp)) {
                 transactionSummary.lastFiveTransaction.forEach {
                     TransactionCard(transaction = it)

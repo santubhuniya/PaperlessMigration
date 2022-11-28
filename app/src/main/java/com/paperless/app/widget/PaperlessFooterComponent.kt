@@ -50,14 +50,14 @@ fun PaperlessFooter(
                             }
                         }
 
-//                        BottomItem.ShoppingList.label -> navHostController.navigate(
-//                            Screens.ShoppingList().name,
-//                        ){
-//                            popUpTo(Screens.ShoppingList().name){
-//                                inclusive = true
-//                                saveState = false
-//                            }
-//                        }
+                        BottomItem.Statistics.label -> navHostController.navigate(
+                            Screens.Statistics.name,
+                        ){
+                            popUpTo(Screens.Statistics.name){
+                                inclusive = true
+                                saveState = false
+                            }
+                        }
 //                        BottomItem.Menu.label -> navHostController.navigate(
 //                            Screens.MoreMenu().name){
 //                            popUpTo(Screens.MoreMenu().name){

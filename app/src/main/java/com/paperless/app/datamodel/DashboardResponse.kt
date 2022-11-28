@@ -134,10 +134,10 @@ data class ChartSummary(
 
 @JsonClass(generateAdapter = true)
 data class ChartData(
-    @Json(name = "xData") val xData : String,
-    @Json(name = "yExpense") val yExpense : Float = 0f,
-    @Json(name = "yIncome") val yIncome : Float = 0f,
-    @Json(name = "yBudget") val yBudget : Float = 0f
+    @Json(name = "xdata") val xData : String,
+    @Json(name = "yexpense") val yExpense : Float = 0f,
+    @Json(name = "yincome") val yIncome : Float = 0f,
+    @Json(name = "ybudget") val yBudget : Float = 0f
 )
 
 //add new transaction

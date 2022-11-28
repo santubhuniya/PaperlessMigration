@@ -173,6 +173,9 @@ fun BuildAppRoute(navHostController: NavHostController) {
         composable(Screens.MonthlyExpenseDet.name) {
             MonthlyExpenseDetails(navHostController = navHostController)
         }
+        composable(Screens.Statistics.name) {
+            StatisticsAction(navHostController = navHostController)
+        }
 
 
     }

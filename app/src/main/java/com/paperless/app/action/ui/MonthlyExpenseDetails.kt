@@ -19,6 +19,8 @@ import com.paperless.app.ui.theme.paperless_font
 import com.paperless.app.viewmodel.TransactionViewModel
 import com.paperless.app.widget.PaperlessAmountDisplay
 import com.paperless.app.widget.TransactionCard
+import com.paperless.app.widget.chart.HalfPieChartCard
+import com.paperless.app.widget.chart.PieChartData
 import timber.log.Timber
 
 @Composable
@@ -53,26 +55,42 @@ fun MonthlyExpenseCardDetails(monthlyExpenseDetails: MonthlyExpenseDetails) {
             style = MaterialTheme.typography.paperless_font.body1,
             color =
             MaterialTheme.colors.Paperless_Text_Black,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 24.dp)
 
         )
         Spacer(modifier = Modifier.size(24.dp))
         // budget category
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.TopCenter
 
-        //top spending
-
-        Column(modifier = Modifier.padding(16.dp)) {
-            monthlyExpenseDetails.listTopSpending?.forEach {
-                TransactionCard(transaction = Transaction(
-                    it.expenseId,
-                    it.expenseName,
+        ) {
+            HalfPieChartCard(pieDataList = monthlyExpenseDetails.listExpenseCategory?.map {
+                PieChartData(
                     it.amount,
-                    it.categoryName,
-                    isExpense = true,
-                    txnDate = it.date
-                ))
-                Spacer(modifier = Modifier.size(24.dp))
+                    it.categoryName
+                )
+            }
+                ?: listOf())
+            //top spending
+
+            Column(modifier = Modifier.padding(start = 16.dp,end=16.dp,top = 220.dp)) {
+                monthlyExpenseDetails.listTopSpending?.forEach {
+                    TransactionCard(
+                        transaction = Transaction(
+                            it.expenseId,
+                            it.expenseName,
+                            it.amount,
+                            it.categoryName,
+                            isExpense = true,
+                            txnDate = it.date
+                        )
+                    )
+                    Spacer(modifier = Modifier.size(24.dp))
+                }
             }
         }
+        Spacer(modifier = Modifier.size(64.dp))
     }
 }

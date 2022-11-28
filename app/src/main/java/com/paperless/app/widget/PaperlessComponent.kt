@@ -1,9 +1,6 @@
 package com.paperless.app.widget
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +21,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.paperless.app.datamodel.BudgetSummary
@@ -640,10 +638,11 @@ fun SolidButton(
         modifier = modifier
             .height(45.dp)
             .width(170.dp)
-            .clip(RoundedCornerShape(60)),
+            ,
         onClick = {
             onClick.invoke()
         },
+        shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.Paperless_Button,
             contentColor = MaterialTheme.colors.Paperless_White
@@ -674,5 +673,50 @@ fun PageHeader(label: String) {
         modifier = Modifier.padding(horizontal = 16.dp)
     )
     Spacer(modifier = Modifier.size(24.dp))
+}
+
+@Composable
+fun TabBarHeader(headerList : List<String>,
+                 selected : String,
+                 onClick: (String) -> Unit){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp)
+            .padding(horizontal = 16.dp)
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.SpaceAround
+
+    ){
+        headerList.forEach { label->
+            Column(modifier = Modifier.clickable {
+                onClick.invoke(label)
+            }, horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Text(
+                    text = label.uppercase(Locale.getDefault()),
+                    style = MaterialTheme.typography.paperless_font.body1,
+                    color =
+                    if (selected == label)
+                        MaterialTheme.colors.Paperless_Text_Black
+                    else MaterialTheme.colors.Paperless_Text_Grey,
+                    fontWeight = if (selected == label)
+                        FontWeight.SemiBold
+                    else
+                        FontWeight.Normal,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                if(selected == label) {
+                    Divider(
+                        thickness = 2.dp,
+                        color = MaterialTheme.colors.Paperless_Button,
+                        modifier = Modifier.width(50.dp)
+                    )
+                }
+            }
+            Spacer(modifier =  Modifier.size(16.dp))
+        }
+
+    }
 }
 

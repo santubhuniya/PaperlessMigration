@@ -3,10 +3,11 @@ package com.paperless.app.viewmodel
 import android.app.Application
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewModelScope
+import com.paperless.app.action.ui.ChartType
 import com.paperless.app.action.ui.getCurrentMonthYear
-import com.paperless.app.datamodel.MonthlyExpenseDetails
-import com.paperless.app.datamodel.NewTransactionRequest
+import com.paperless.app.datamodel.*
 import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.repo.PaperlessRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,10 @@ constructor(
 
     val addATransaction : MutableState<NetworkResponse<Long>> = mutableStateOf(NetworkResponse.InitialState())
     val monthlyTranscationDetails : MutableState<NetworkResponse<MonthlyExpenseDetails>> = mutableStateOf(NetworkResponse.InitialState())
+    val statisticsResponse : MutableState<NetworkResponse<ChartSummary>> = mutableStateOf(NetworkResponse.InitialState())
+    val selectedChartType : MutableState<String> = mutableStateOf(ChartType.weekly.name)
+
+
     fun addNewTranscation(newTransactionRequest: NewTransactionRequest){
         // recent transcation will be transction for today
         addATransaction.value = NetworkResponse.Loading()
@@ -59,6 +64,24 @@ constructor(
             }
             )
         }
+    }
+
+    fun getStatisticsData(chartRequest: ChartRequest){
+        statisticsResponse.value = NetworkResponse.Loading()
+        viewModelScope.launch (Dispatchers.IO){
+            paperlessRepo.getChartSummary(chartRequest).fold(
+                {
+                    Timber.d("Exception -${it.message}")
+                    statisticsResponse.value = NetworkResponse.Error("${it.message}")
+                },
+                {
+                    it?.chartSummary?.let{
+                        statisticsResponse.value = NetworkResponse.Completed(it)
+                    }
+                }
+            )
+        }
+
     }
 
 }
