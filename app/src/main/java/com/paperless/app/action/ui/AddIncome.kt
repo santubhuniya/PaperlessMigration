@@ -80,11 +80,9 @@ fun AddIncomeCard(
                 inputText = incomeTitle
             )
             Spacer(modifier = Modifier.size(16.dp))
-            TextInput(
-                label = "Income Amount",
-                hint = "Enter income amount",
-                inputText = incomeAmount
-            )
+            KeyboardInputComponent(incomeAmount,"Enter income amount"){ t1->
+                incomeAmount.value = t1
+            }
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = "Income Source",

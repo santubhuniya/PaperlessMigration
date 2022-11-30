@@ -5,6 +5,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,16 +22,17 @@ import timber.log.Timber
 
 
 @Composable
-fun BudgetSummaryAction(navHostController: NavHostController){
+fun BudgetSummaryAction(navHostController: NavHostController) {
 
-    val budgetViewModel : BudgetViewModel = hiltViewModel()
+    val budgetViewModel: BudgetViewModel = hiltViewModel()
     val expenseBudgetList = budgetViewModel.budgetExpenseList.value
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         budgetViewModel.getBudgetDetails(3, getCurrentMonthYear())
     }
 
-    when(expenseBudgetList){
+
+    when (expenseBudgetList) {
         is NetworkResponse.Loading -> Timber.d("Loading")
         is NetworkResponse.Error -> Timber.d("Error")
         is NetworkResponse.Completed -> ExpenseBudgetSummaryCard(budgetList = expenseBudgetList.data)
@@ -38,11 +41,25 @@ fun BudgetSummaryAction(navHostController: NavHostController){
 }
 
 @Composable
-fun ExpenseBudgetSummaryCard(budgetList : List<BudgetSummary>){
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(
-            horizontal = 16.dp, vertical = 16.dp)) {
+fun ExpenseBudgetSummaryCard(budgetList: List<BudgetSummary>) {
+    val totalBudgetAmount = remember {
+        mutableStateOf(0.00F)
+    }
+    var budgetAmount = 0.0F
+    budgetList.map {
+        it.budgetAmount?.let { amount->
+            budgetAmount += amount
+        }
+    }
+    totalBudgetAmount.value = budgetAmount
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                horizontal = 16.dp, vertical = 16.dp
+            )
+    ) {
         PageHeader("Monthly Budget")
 
         Column(
@@ -53,7 +70,7 @@ fun ExpenseBudgetSummaryCard(budgetList : List<BudgetSummary>){
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            PaperlessAmountDisplay(2000.89F)
+            PaperlessAmountDisplay(totalBudgetAmount.value)
             Spacer(modifier = Modifier.size(32.dp))
             budgetList.forEach {
                 GenericBudgetRow(

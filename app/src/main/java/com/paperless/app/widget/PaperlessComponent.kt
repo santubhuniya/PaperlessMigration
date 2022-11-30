@@ -3,6 +3,8 @@ package com.paperless.app.widget
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.R
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -270,73 +272,101 @@ fun Long.getMMMYYYY(): String {
 
 @Composable
 fun GenericBudgetRow(budgetName: String, currentAmount: Float?, targetAmount: Float?) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .background(
-                    shape = RoundedCornerShape(15.dp),
-                    color = MaterialTheme.colors.Paperless_Light_Card_1
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            LocalImage(
-                imageId = com.paperless.app.R.drawable.amazon,
-                contentDes = "expenses",
-                color = MaterialTheme.colors.Paperless_Card
-            )
-        }
-        Spacer(modifier = Modifier.size(16.dp))
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text(
-                text = budgetName,
-                style = MaterialTheme.typography.paperless_font.body2,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colors.Paperless_Text_Black
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            ProgressBarWidget(.7)
-            Spacer(modifier = Modifier.size(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+    val showKeyboard = remember{
+        mutableStateOf(false)
+    }
+    val budgetAmount = remember{
+        mutableStateOf(targetAmount?.let {
+            "$it"
+        } ?: "0.0")
+    }
+    Column(modifier = Modifier.fillMaxWidth()) {
 
-                Text(
-                    text = "${currentAmount ?: "0.00"}",
-                    style = MaterialTheme.typography.paperless_font.body2,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colors.Paperless_Text_Grey
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .background(
+                        shape = RoundedCornerShape(15.dp),
+                        color = MaterialTheme.colors.Paperless_Light_Card_1
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                LocalImage(
+                    imageId = com.paperless.app.R.drawable.amazon,
+                    contentDes = "expenses",
+                    color = MaterialTheme.colors.Paperless_Card
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            }
+            Spacer(modifier = Modifier.size(16.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = budgetName,
+                    style = MaterialTheme.typography.paperless_font.body2,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colors.Paperless_Text_Black
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                ProgressBarWidget(.7)
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
 
                     Text(
-                        text = "${targetAmount ?: "0.00"}",
+                        text = "${currentAmount ?: "0.00"}",
                         style = MaterialTheme.typography.paperless_font.body2,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colors.Paperless_Text_Black,
-                        modifier = Modifier.clickable { }
+                        color = MaterialTheme.colors.Paperless_Text_Grey
                     )
-                    Spacer(modifier = Modifier.size(8.dp))
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.background(color = Color(0x80CCCCCC),shape = RoundedCornerShape(50))
-                    ) {
-                        LocalImage(
-                            imageId = com.paperless.app.R.drawable.edit_icon,
-                            contentDes = "Edit Budget",
-                            color = MaterialTheme.colors.Paperless_Text_Black,
-                            width = 15.dp,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable {
 
+                        }
+                    ) {
+
+                        Text(
+                            text = "${targetAmount ?: "0.00"}",
+                            style = MaterialTheme.typography.paperless_font.body2,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colors.Paperless_Text_Black,
+                            modifier = Modifier.clickable {
+                                showKeyboard.value = !showKeyboard.value
+                            }
                         )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.background(
+                                color = Color(0x80CCCCCC),
+                                shape = RoundedCornerShape(50)
+                            )
+                        ) {
+                            LocalImage(
+                                imageId = com.paperless.app.R.drawable.edit_icon,
+                                contentDes = "Edit Budget",
+                                color = MaterialTheme.colors.Paperless_Text_Black,
+                                width = 15.dp,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+
+                            )
+                        }
                     }
                 }
-            }
 
+            }
+        }
+
+        if(showKeyboard.value){
+            KeyboardInputComponent(data = budgetAmount, label = "Enter or update budget amount" )   {
+                budgetAmount.value = it
+            }
         }
     }
 
@@ -650,6 +680,7 @@ fun SearchInput(
 fun SolidButton(
     name: String,
     modifier: Modifier = Modifier,
+    isTransparent : Boolean = false,
     onClick: () -> Unit
 ) {
     Button(
@@ -662,7 +693,7 @@ fun SolidButton(
         },
         shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.Paperless_Button,
+            backgroundColor = if(isTransparent)  Color.Transparent else MaterialTheme.colors.Paperless_Button,
             contentColor = MaterialTheme.colors.Paperless_White
         ),
         elevation = ButtonDefaults.elevation(
@@ -674,7 +705,7 @@ fun SolidButton(
         Text(
             text = name,
             style = MaterialTheme.typography.paperless_font.body1,
-            color = MaterialTheme.colors.Paperless_White,
+            color = if(isTransparent) MaterialTheme.colors.Paperless_Text_Black else MaterialTheme.colors.Paperless_White,
             fontWeight = FontWeight.SemiBold
         )
     }
@@ -737,4 +768,113 @@ fun TabBarHeader(headerList : List<String>,
 
     }
 }
+
+@Composable
+fun KeyboardInputComponent(data : MutableState<String> ,label: String,callback : (String)->Unit) {
+    val showKeyBoard = remember {
+        mutableStateOf(true)
+    }
+    val showDone = remember {
+        mutableStateOf(false)
+    }
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Top
+
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = data.value,
+                    style = MaterialTheme.typography.paperless_font.h1,
+                    color = MaterialTheme.colors.Paperless_Text_Black,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.clickable {
+                        showKeyBoard.value = !showKeyBoard.value
+                    }
+                )
+                Divider(
+                    thickness = 2.dp,
+                    color = MaterialTheme.colors.Paperless_Text_Black,
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(vertical = 3.dp)
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.paperless_font.body2,
+                    color = MaterialTheme.colors.Paperless_Text_Grey,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+            }
+            if(showDone.value) {
+                LocalImage(
+                    imageId = com.paperless.app.R.drawable.done_icon,
+                    contentDes = "correct amount",
+                    color = MaterialTheme.colors.Paperless_Button,
+                    modifier = Modifier.size(75.dp).padding(top = 10.dp).clickable {
+                        showDone.value = false
+                        showKeyBoard.value = false
+                    }
+                )
+            }else{
+                Spacer(modifier = Modifier.size(75.dp))
+            }
+        }
+
+        val keyboardList = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "<-", "0", ".")
+        if (showKeyBoard.value) {
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .height(250.dp)
+                    .padding(horizontal = 0.dp),
+                columns = GridCells.Fixed(3), content =
+                {
+                    items(keyboardList.size) {
+                        SolidButton(
+                            keyboardList[it],
+                            isTransparent = true,
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            val char = keyboardList[it]
+                            when (char) {
+                                "C" -> data.value = "0.00"
+                                "<-" -> if (data.value.length > 0) data.value =
+                                    data.value.substring(0, data.value.length - 1) else data.value =
+                                    "0.00"
+                                "done" -> callback(data.value)
+                                "." -> if (!data.value.contains(".")) data.value = "${data.value}."
+                                else ->
+                                    if (data.value == "0.00") {
+                                        data.value = char
+                                    } else if (data.value.contains(".") && data.value.substring(
+                                            data.value.indexOf(
+                                                "."
+                                            ) + 1, data.value.length
+                                        ).length < 2
+                                    ) {
+                                        data.value = "${data.value}$char"
+                                    } else if (!data.value.contains(".")) {
+                                        data.value = "${data.value}$char"
+                                    }
+                            }
+                            callback(data.value)
+                            if(!showDone.value){
+                                showDone.value = true
+                            }
+                        }
+                    }
+                }
+            )
+        }
+
+    }
+}
+
 

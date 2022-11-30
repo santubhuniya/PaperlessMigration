@@ -23,38 +23,43 @@ val Typography.paperless_font: Typography
         defaultFontFamily = fonts,
         body1 = TextStyle(
             fontSize = 14.sp,
-            lineHeight = 14.sp,
+            lineHeight = 18.sp,
             letterSpacing = 0.sp
 
         ),
         body2 = TextStyle(
             fontSize = 13.sp,
-            lineHeight = 13.sp,
+            lineHeight = 17.sp,
             letterSpacing = 0.sp,
 
             ),
         h4 = TextStyle(
             fontSize = 25.sp,
-            lineHeight = 25.sp,
+            lineHeight = 27.sp,
             letterSpacing = 0.sp
 
         ),
         h3 = TextStyle(
             fontSize = 32.sp,
-            lineHeight = 32.sp,
+            lineHeight = 34.sp,
             letterSpacing = 0.sp
         ),
         h5 = TextStyle(
             fontSize = 18.sp,
-            lineHeight = 18.sp,
+            lineHeight = 22.sp,
             letterSpacing = 0.sp
 
         ),
         caption =  TextStyle(
             fontSize = 11.sp,
-            lineHeight = 11.sp,
+            lineHeight = 14.sp,
             letterSpacing = 0.sp
-        )
+        ),
+        h1 = TextStyle(
+            fontSize = 48.sp,
+            lineHeight = 50.sp,
+            letterSpacing = 0.sp
+        ),
     )
 
 // Set of Material typography styles to start with

@@ -84,11 +84,9 @@ fun AddExpenseCard(
                 inputText = expenseTitle
             )
             Spacer(modifier = Modifier.size(16.dp))
-            TextInput(
-                label = "Expense Amount",
-                hint = "Enter expense amount",
-                inputText = expenseAmount
-            )
+            KeyboardInputComponent(expenseAmount,"Enter expense amount"){ t1->
+                expenseAmount.value = t1
+            }
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = "Expense category",
