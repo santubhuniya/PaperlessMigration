@@ -161,4 +161,8 @@ data class NewTransactionRequest(
     @Json(name = "transactionTitle") val transactionTitle : String,
     @Json(name = "budgetId") val budgetId : Int = 0
 )
-
+@JsonClass(generateAdapter = true)
+data class RecentTransactionResp(
+    @Json(name = "data") val transactionList : List<Transaction>?,
+    @Json(name = "error") val error: Error?
+)

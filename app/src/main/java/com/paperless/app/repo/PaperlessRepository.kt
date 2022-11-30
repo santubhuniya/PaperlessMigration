@@ -53,6 +53,17 @@ class PaperlessRepository(val paperlessService: PaperlessService) {
         paperlessService.addNewTransaction(newTransactionRequest = newTransactionRequest).body()
     }
 
+    suspend fun getRecentTransaction(
+        userId: Long,
+        txnType : String
+    ) : Either<Throwable,RecentTransactionResp?>
+    = Either.catch {
+        paperlessService.getLastFiveTransaction(
+            userId = userId,
+            transactionType = txnType
+        ).body()
+    }
+
 }
 
 sealed class NetworkResponse<out T : Any?> {

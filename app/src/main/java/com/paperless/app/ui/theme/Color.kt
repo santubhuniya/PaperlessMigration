@@ -38,3 +38,6 @@ val Colors.Paperless_Light_Card_3 : Color
 
 val Colors.Paperless_input_background : Color
     get() = Color(0x70FFFFFF)
+
+val Colors.Paperless_Red : Color
+    get() = Color(0xFFFF0000)

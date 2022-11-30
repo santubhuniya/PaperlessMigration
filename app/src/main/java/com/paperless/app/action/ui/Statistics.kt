@@ -15,12 +15,14 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.paperless.app.Screens
 import com.paperless.app.datamodel.ChartRequest
 import com.paperless.app.datamodel.ChartSummary
 import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.ui.theme.Paperless_Text_Black
 import com.paperless.app.ui.theme.Paperless_Text_Grey
 import com.paperless.app.ui.theme.paperless_font
+import com.paperless.app.viewmodel.NavigationViewModel
 import com.paperless.app.viewmodel.TransactionViewModel
 import com.paperless.app.widget.TabBarHeader
 import com.paperless.app.widget.chart.BarChartCard
@@ -32,11 +34,15 @@ import timber.log.Timber
 import java.util.*
 
 @Composable
-fun StatisticsAction(navHostController: NavHostController) {
+fun StatisticsAction(
+    navHostController: NavHostController,
+    navigationViewModel: NavigationViewModel
+) {
     val transactionViewModel: TransactionViewModel = hiltViewModel()
     val statisticsResponse = transactionViewModel.statisticsResponse.value
     LaunchedEffect(Unit) {
         getStatisticalData(ChartType.weekly, transactionViewModel)
+        navigationViewModel.setupHeaderAndFooter(Screens.Statistics)
     }
     when (statisticsResponse) {
         is NetworkResponse.Loading -> Timber.d("Loading")

@@ -42,4 +42,11 @@ interface PaperlessService {
         @Body newTransactionRequest: NewTransactionRequest
     ) : Response<NewTransactionResponse?>
 
+    @GET("transaction/lastfive/{userId}/{txnType}")
+    suspend fun getLastFiveTransaction(
+        @Path("userId") userId : Long,
+        @Path("txnType") transactionType : String
+    ) : Response<RecentTransactionResp?>
+
+
 }

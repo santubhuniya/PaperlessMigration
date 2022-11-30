@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -27,7 +28,9 @@ import com.paperless.app.ui.theme.PaperlessTheme
 import com.paperless.app.ui.theme.Paperless_Background
 import com.paperless.app.ui.theme.Paperless_Text_Black
 import com.paperless.app.ui.theme.paperless_font
+import com.paperless.app.viewmodel.NavigationViewModel
 import com.paperless.app.widget.BottomItem
+import com.paperless.app.widget.HeaderCard
 import com.paperless.app.widget.LocalImage
 import com.paperless.app.widget.PaperlessFooter
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,14 +48,21 @@ class MainActivity : ComponentActivity() {
                 initialValue = ModalBottomSheetValue.Hidden,
             )
             val coroutineScope = rememberCoroutineScope()
+            val navigationViewModel: NavigationViewModel = hiltViewModel()
             PaperlessTheme {
                 // A surface container using the 'background' color from the theme
                 Scaffold(
-                    topBar = {},
+                    topBar = {
+                             HeaderCard(
+                                 navHostController = navController,
+                                 actionButton = navigationViewModel.actions.value,
+                                showBack = navigationViewModel.showBack.value
+                             )
+                    },
                     bottomBar = {
                         PaperlessFooter(
                             navHostController = navController,
-                            bottomItem = BottomItem.Home,
+                            bottomItem = navigationViewModel.selectedFooter.value,
                             bottomSheetState
                         )
                     },
@@ -80,7 +90,8 @@ class MainActivity : ComponentActivity() {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(50.dp).clickable {
+                                        .height(50.dp)
+                                        .clickable {
                                             coroutineScope.launch {
                                                 bottomSheetState.hide()
                                             }
@@ -139,7 +150,7 @@ class MainActivity : ComponentActivity() {
                                 .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            BuildAppRoute(navController)
+                            BuildAppRoute(navController,navigationViewModel)
                         }
                     }
                 }
@@ -150,11 +161,11 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun BuildAppRoute(navHostController: NavHostController) {
+fun BuildAppRoute(navHostController: NavHostController,navigationViewModel: NavigationViewModel) {
 
     AnimatedNavHost(navController = navHostController, startDestination = Screens.Dashboard.name) {
         composable(Screens.Dashboard.name) {
-            DashboardUi(navHostController = navHostController)
+            DashboardUi(navHostController = navHostController,navigationViewModel)
         }
         composable(Screens.BudgetSummary.name) {
             BudgetSummaryAction(navHostController = navHostController)
@@ -163,18 +174,18 @@ fun BuildAppRoute(navHostController: NavHostController) {
             GoalSetupAction(navHostController = navHostController)
         }
         composable(Screens.AddExpense.name) {
-            AddExpenseCard(navHostController = navHostController)
+            AddExpenseCard(navHostController = navHostController,navigationViewModel)
         }
 
         composable(Screens.AddIncome.name) {
-            AddIncomeCard(navHostController = navHostController)
+            AddIncomeCard(navHostController = navHostController,navigationViewModel)
         }
 
         composable(Screens.MonthlyExpenseDet.name) {
             MonthlyExpenseDetails(navHostController = navHostController)
         }
         composable(Screens.Statistics.name) {
-            StatisticsAction(navHostController = navHostController)
+            StatisticsAction(navHostController = navHostController,navigationViewModel)
         }
 
 

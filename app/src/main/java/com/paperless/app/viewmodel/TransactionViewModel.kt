@@ -27,6 +27,7 @@ constructor(
     val monthlyTranscationDetails : MutableState<NetworkResponse<MonthlyExpenseDetails>> = mutableStateOf(NetworkResponse.InitialState())
     val statisticsResponse : MutableState<NetworkResponse<ChartSummary>> = mutableStateOf(NetworkResponse.InitialState())
     val selectedChartType : MutableState<String> = mutableStateOf(ChartType.weekly.name)
+    val lastFiveTranscation : MutableState<List<Transaction>> = mutableStateOf(listOf())
 
 
     fun addNewTranscation(newTransactionRequest: NewTransactionRequest){
@@ -82,6 +83,27 @@ constructor(
             )
         }
 
+    }
+
+    fun getLastFiveTransaction(
+        userId : Long,
+        txnType : String
+    ){
+        viewModelScope.launch (Dispatchers.IO){
+            paperlessRepo.getRecentTransaction(
+                userId = userId,
+                txnType = txnType
+            ).fold(
+                {
+                    Timber.d("error -${it.message}")
+                },
+                {
+                    it?.transactionList?.let {
+                        lastFiveTranscation.value = it
+                    }
+                }
+            )
+        }
     }
 
 }

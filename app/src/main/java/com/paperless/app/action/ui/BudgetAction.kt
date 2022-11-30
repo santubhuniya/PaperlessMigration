@@ -63,6 +63,8 @@ fun ExpenseBudgetSummaryCard(budgetList : List<BudgetSummary>){
                 )
                 Spacer(modifier = Modifier.size(24.dp))
             }
+
+            Spacer(modifier = Modifier.size(64.dp))
         }
     }
 

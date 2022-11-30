@@ -21,6 +21,7 @@ import com.paperless.app.datamodel.TransactionSummary
 import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.ui.theme.*
 import com.paperless.app.viewmodel.DashboardViewModel
+import com.paperless.app.viewmodel.NavigationViewModel
 import com.paperless.app.widget.*
 import com.paperless.app.widget.chart.BarChartCard
 import com.paperless.app.widget.chart.BarChartData
@@ -31,12 +32,12 @@ import java.util.*
 
 
 @Composable
-fun DashboardUi(navHostController: NavHostController) {
+fun DashboardUi(navHostController: NavHostController, navigationViewModel: NavigationViewModel) {
     val dashboardViewModel: DashboardViewModel = hiltViewModel()
-
     //get dashboard for paperless
     LaunchedEffect(Unit) {
         dashboardViewModel.getPaperlessDashboard(3, getCurrentMonthYear())
+        navigationViewModel.setupHeaderAndFooter(Screens.Dashboard)
     }
     val dashboardData = dashboardViewModel.dashboardData.value
 

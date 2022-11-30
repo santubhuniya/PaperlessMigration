@@ -311,12 +311,30 @@ fun GenericBudgetRow(budgetName: String, currentAmount: Float?, targetAmount: Fl
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colors.Paperless_Text_Grey
                 )
-                Text(
-                    text = "${targetAmount ?: "0.00"}",
-                    style = MaterialTheme.typography.paperless_font.body2,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colors.Paperless_Text_Black
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                    Text(
+                        text = "${targetAmount ?: "0.00"}",
+                        style = MaterialTheme.typography.paperless_font.body2,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colors.Paperless_Text_Black,
+                        modifier = Modifier.clickable { }
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.background(color = Color(0x80CCCCCC),shape = RoundedCornerShape(50))
+                    ) {
+                        LocalImage(
+                            imageId = com.paperless.app.R.drawable.edit_icon,
+                            contentDes = "Edit Budget",
+                            color = MaterialTheme.colors.Paperless_Text_Black,
+                            width = 15.dp,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+
+                        )
+                    }
+                }
             }
 
         }
@@ -348,7 +366,8 @@ enum class CalendarType {
 
 @Composable
 fun PaperlessCalendar(
-    calendarType: CalendarType = CalendarType.Weekly
+    calendarType: CalendarType = CalendarType.Weekly,
+    onSelect:(Long)->Unit
 ) {
 
     val selectedDate = remember {
@@ -440,7 +459,6 @@ fun PaperlessCalendar(
                                 )
                         ) {
 
-
                             Text(
                                 text = "${it.value.getDateFromTime()}",
                                 style = MaterialTheme.typography.paperless_font.body1,
@@ -451,8 +469,8 @@ fun PaperlessCalendar(
                                     MaterialTheme.colors.Paperless_Text_Black,
                                 modifier = Modifier.clickable {
                                     selectedDate.value = it.value
+                                    onSelect.invoke(it.value)
                                 }
-
                             )
                         }
                         Spacer(modifier = Modifier.size(16.dp))
@@ -533,7 +551,7 @@ fun TextInput(
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 cursorColor = MaterialTheme.colors.Paperless_Text_Black,
                 backgroundColor = MaterialTheme.colors.Paperless_input_background,
-                focusedBorderColor = MaterialTheme.colors.Paperless_Button,
+                focusedBorderColor = Color(0xAA3C3DBF),
                 unfocusedBorderColor = MaterialTheme.colors.Paperless_input_background
             ),
             onValueChange = { value ->
