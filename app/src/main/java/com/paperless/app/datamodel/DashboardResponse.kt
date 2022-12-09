@@ -166,3 +166,30 @@ data class RecentTransactionResp(
     @Json(name = "data") val transactionList : List<Transaction>?,
     @Json(name = "error") val error: Error?
 )
+
+//new budget
+@JsonClass(generateAdapter = true)
+data class NewBudgetRequest(
+    @Json(name = "budgetSeq") val budgetSeq : Long?,
+    @Json(name = "userId") val userId: Long,
+    @Json(name = "budgetFor") val budgetFor : String, //mm_yyyy
+    @Json(name = "budgetTitle") val budgetTitle : String,
+    @Json(name = "budgetAmount") val budgetAmount : Float,
+    @Json(name = "dateAdded") val dateAdded : Long?,
+    @Json(name = "transactionType") val transactionType : Long,
+    @Json(name = "transactionTypeLevel") val transactionTypeLevel : Int
+)
+
+@JsonClass(generateAdapter = true)
+data class BudgetResponse(
+    @Json(name = "data") val budgetResp : NewBudgetResp?,
+    @Json(name = "error") val error: Error?
+)
+@JsonClass(generateAdapter = true)
+data class NewBudgetResp(
+    @Json(name = "totalBudget") val totalBudget : Float,
+    @Json(name = "newAmount") val newAmount : Float,
+    @Json(name = "budgetSeq") val budgetSeq : Long
+)
+
+

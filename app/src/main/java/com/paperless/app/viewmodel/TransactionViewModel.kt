@@ -10,6 +10,7 @@ import com.paperless.app.action.ui.getCurrentMonthYear
 import com.paperless.app.datamodel.*
 import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.repo.PaperlessRepository
+import com.paperless.app.repo.SharedPrefRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,8 +21,9 @@ import javax.inject.Inject
 class TransactionViewModel @Inject
 constructor(
     val paperlessRepo: PaperlessRepository,
-    application: Application
-) : BaseViewModel(application) {
+    application: Application,
+    sharedPrefRepo: SharedPrefRepo
+) : BaseViewModel(application,sharedPrefRepo) {
 
     val addATransaction : MutableState<NetworkResponse<Long>> = mutableStateOf(NetworkResponse.InitialState())
     val monthlyTranscationDetails : MutableState<NetworkResponse<MonthlyExpenseDetails>> = mutableStateOf(NetworkResponse.InitialState())

@@ -2,9 +2,13 @@ package com.paperless.app.repo
 
 import arrow.core.Either
 import com.paperless.app.datamodel.*
+import com.paperless.app.service.LoginService
 import com.paperless.app.service.PaperlessService
 
-class PaperlessRepository(val paperlessService: PaperlessService) {
+class PaperlessRepository(
+    val paperlessService: PaperlessService,
+    val loginService: LoginService
+) {
 
     suspend fun getPaperlessDashboard(userId : Long,montYear : String) : Either<Throwable, DashboardResponse?>
     = Either.catch {
@@ -63,6 +67,23 @@ class PaperlessRepository(val paperlessService: PaperlessService) {
             transactionType = txnType
         ).body()
     }
+
+    suspend fun addNewUpdateBudget(
+        newBudgetRequest: NewBudgetRequest
+    ) : Either<Throwable,BudgetResponse?>
+    = Either.catch {
+        paperlessService.addUpdateBudget(newBudgetRequest)
+            .body()
+    }
+
+    suspend fun doLogin(
+        loginRequest: LoginRequest
+    ) : Either<Throwable,LoginReponseData?>
+    = Either.catch {
+        loginService.doLogin(loginRequest)
+            .body()
+    }
+
 
 }
 

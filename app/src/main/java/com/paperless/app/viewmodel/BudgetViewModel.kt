@@ -4,10 +4,10 @@ import android.app.Application
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.paperless.app.datamodel.BudgetExpenseSummary
-import com.paperless.app.datamodel.BudgetSummary
+import com.paperless.app.datamodel.*
 import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.repo.PaperlessRepository
+import com.paperless.app.repo.SharedPrefRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,11 +17,14 @@ import javax.inject.Inject
 @HiltViewModel
 class BudgetViewModel @Inject constructor(
     val paperlessRepo: PaperlessRepository,
-    application: Application
-) : BaseViewModel(application = application) {
+    application: Application,
+    sharedPrefRepo : SharedPrefRepo
+) : BaseViewModel(application = application, sharedPrefRepo = sharedPrefRepo) {
 
     val budgetExpenseList: MutableState<NetworkResponse<List<BudgetSummary>>> =
         mutableStateOf(NetworkResponse.InitialState())
+
+    val newBudgetResp : MutableState<NetworkResponse<NewBudgetResp>> = mutableStateOf(NetworkResponse.InitialState())
 
     fun getBudgetDetails(userId: Long, monthYear: String) {
         budgetExpenseList.value = NetworkResponse.Loading()
@@ -42,6 +45,24 @@ class BudgetViewModel @Inject constructor(
                 }
             )
 
+        }
+    }
+
+    fun addUpdateBudget(newBudgetRequest: NewBudgetRequest){
+        viewModelScope.launch(Dispatchers.IO) {
+            paperlessRepo.addNewUpdateBudget(
+                newBudgetRequest
+            ).fold(
+                {
+                    Timber.d("exception for adding budget - ${it.message}")
+                    newBudgetResp.value = NetworkResponse.Error("${it.message}")
+                },
+                {
+                    it?.budgetResp?.let{
+                        newBudgetResp.value = NetworkResponse.Completed(it)
+                    }
+                }
+            )
         }
     }
 }

@@ -8,13 +8,21 @@ import com.paperless.app.datamodel.DashboardResponse
 import com.paperless.app.datamodel.TransactionSummary
 import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.repo.PaperlessRepository
+import com.paperless.app.repo.SharedPrefRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class DashboardViewModel @Inject constructor(val paperlessRepo: PaperlessRepository, application: Application) : BaseViewModel(application = application) {
+class DashboardViewModel @Inject constructor(
+    val paperlessRepo: PaperlessRepository,
+    application: Application,
+    sharedPrefRepo: SharedPrefRepo
+) : BaseViewModel(
+    application = application,
+    sharedPrefRepo = sharedPrefRepo
+) {
 
     val dashboardData : MutableState<NetworkResponse<TransactionSummary>> = mutableStateOf(NetworkResponse.InitialState())
 

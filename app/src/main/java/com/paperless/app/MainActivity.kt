@@ -53,18 +53,22 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Scaffold(
                     topBar = {
-                             HeaderCard(
-                                 navHostController = navController,
-                                 actionButton = navigationViewModel.actions.value,
-                                showBack = navigationViewModel.showBack.value
-                             )
+                            if(navigationViewModel.hideTopBar.value.not()) {
+                                HeaderCard(
+                                    navHostController = navController,
+                                    actionButton = navigationViewModel.actions.value,
+                                    showBack = navigationViewModel.showBack.value
+                                )
+                            }
                     },
                     bottomBar = {
-                        PaperlessFooter(
-                            navHostController = navController,
-                            bottomItem = navigationViewModel.selectedFooter.value,
-                            bottomSheetState
-                        )
+                        if(navigationViewModel.hideBottomBar.value.not()) {
+                            PaperlessFooter(
+                                navHostController = navController,
+                                bottomItem = navigationViewModel.selectedFooter.value,
+                                bottomSheetState
+                            )
+                        }
                     },
                     backgroundColor = MaterialTheme.colors.Paperless_Background
                 ) {
@@ -163,7 +167,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BuildAppRoute(navHostController: NavHostController,navigationViewModel: NavigationViewModel) {
 
-    AnimatedNavHost(navController = navHostController, startDestination = Screens.Dashboard.name) {
+    AnimatedNavHost(navController = navHostController, startDestination = Screens.Login.name) {
         composable(Screens.Dashboard.name) {
             DashboardUi(navHostController = navHostController,navigationViewModel)
         }
@@ -187,7 +191,9 @@ fun BuildAppRoute(navHostController: NavHostController,navigationViewModel: Navi
         composable(Screens.Statistics.name) {
             StatisticsAction(navHostController = navHostController,navigationViewModel)
         }
-
+        composable(Screens.Login.name) {
+            LoginAction(navHostController = navHostController,navigationViewModel)
+        }
 
     }
 

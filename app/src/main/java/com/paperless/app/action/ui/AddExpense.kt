@@ -84,9 +84,11 @@ fun AddExpenseCard(
                 inputText = expenseTitle
             )
             Spacer(modifier = Modifier.size(16.dp))
-            KeyboardInputComponent(expenseAmount,"Enter expense amount"){ t1->
+
+            KeyboardInputComponent(expenseAmount, "Enter expense amount") { t1 ->
                 expenseAmount.value = t1
             }
+
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = "Expense category",
@@ -160,9 +162,11 @@ fun AddExpenseCard(
         }
 
         Spacer(modifier = Modifier.size(24.dp))
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
             Text(
                 "Recently added expense",
                 style = MaterialTheme.typography.paperless_font.body1,

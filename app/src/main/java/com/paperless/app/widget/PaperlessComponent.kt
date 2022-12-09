@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -23,13 +24,18 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.paperless.app.datamodel.BudgetSummary
 import com.paperless.app.datamodel.Transaction
+import com.paperless.app.repo.NetworkResponse
 import com.paperless.app.ui.theme.*
 import timber.log.Timber
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.Year
 import java.util.*
@@ -271,15 +277,20 @@ fun Long.getMMMYYYY(): String {
 }
 
 @Composable
-fun GenericBudgetRow(budgetName: String, currentAmount: Float?, targetAmount: Float?) {
-    val showKeyboard = remember{
-        mutableStateOf(false)
-    }
-    val budgetAmount = remember{
-        mutableStateOf(targetAmount?.let {
+fun GenericBudgetRow(
+    budgetName: String,
+    currentAmount: Float?,
+    targetAmount: MutableState<Float?>,
+    showKeyboard: MutableState<Boolean>,
+    onSelect: (String) -> Unit
+) {
+
+    val budgetAmount = remember {
+        mutableStateOf(targetAmount.value?.let {
             "$it"
         } ?: "0.0")
     }
+    val expense = currentAmount ?: 0.0f
     Column(modifier = Modifier.fillMaxWidth()) {
 
 
@@ -311,7 +322,16 @@ fun GenericBudgetRow(budgetName: String, currentAmount: Float?, targetAmount: Fl
                     color = MaterialTheme.colors.Paperless_Text_Black
                 )
                 Spacer(modifier = Modifier.size(8.dp))
-                ProgressBarWidget(.7)
+                val progress = targetAmount.value?.let {
+                    if (it == 0.0f) {
+                        0.0f
+                    } else if (expense > it) {
+                        1f
+                    } else {
+                        expense / it
+                    }
+                } ?: 0f
+                ProgressBarWidget(progress.toDouble())
                 Spacer(modifier = Modifier.size(8.dp))
 
                 Row(
@@ -320,7 +340,7 @@ fun GenericBudgetRow(budgetName: String, currentAmount: Float?, targetAmount: Fl
                 ) {
 
                     Text(
-                        text = "${currentAmount ?: "0.00"}",
+                        text = "${currentAmount?.format2Decimal() ?: "0.00"}",
                         style = MaterialTheme.typography.paperless_font.body2,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colors.Paperless_Text_Grey
@@ -332,7 +352,7 @@ fun GenericBudgetRow(budgetName: String, currentAmount: Float?, targetAmount: Fl
                     ) {
 
                         Text(
-                            text = "${targetAmount ?: "0.00"}",
+                            text = "${targetAmount.value?.format2Decimal() ?: "0.00"}",
                             style = MaterialTheme.typography.paperless_font.body2,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colors.Paperless_Text_Black,
@@ -363,9 +383,14 @@ fun GenericBudgetRow(budgetName: String, currentAmount: Float?, targetAmount: Fl
             }
         }
 
-        if(showKeyboard.value){
-            KeyboardInputComponent(data = budgetAmount, label = "Enter or update budget amount" )   {
-                budgetAmount.value = it
+        if (showKeyboard.value) {
+            KeyboardInputComponent(
+                data = budgetAmount,
+                label = "Enter or update budget amount"
+            ) {
+                // budgetAmount.value = it
+                // return back to data
+                onSelect.invoke(it)
             }
         }
     }
@@ -397,11 +422,14 @@ enum class CalendarType {
 @Composable
 fun PaperlessCalendar(
     calendarType: CalendarType = CalendarType.Weekly,
-    onSelect:(Long)->Unit
+    onSelect: (Long) -> Unit
 ) {
 
     val selectedDate = remember {
         mutableStateOf(Calendar.getInstance().timeInMillis)
+    }
+    val weekBefore = remember {
+        mutableStateOf(0)
     }
 
     val monthYear = remember {
@@ -420,6 +448,8 @@ fun PaperlessCalendar(
         val calendarMap = mutableMapOf<Int, Long>()
 
         val calendar = Calendar.getInstance()
+        Timber.d("week before - ${weekBefore.value}")
+        calendar.add(Calendar.DATE,- weekBefore.value*7)
         calendar.firstDayOfWeek = Calendar.SUNDAY
         calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
         val startDay = calendar.get(Calendar.DATE)
@@ -428,8 +458,8 @@ fun PaperlessCalendar(
         calendarMap.put(1, calendar.timeInMillis)
         monthYear.value = calendar.timeInMillis.getMMMYYYY()
         for (i in 2..7) {
-            calendar.set(
-                Calendar.DATE, calendar.get(Calendar.DATE) + 1
+            calendar.add(
+                Calendar.DATE,  1
             )
             calendarMap.put(i, calendar.timeInMillis)
         }
@@ -438,19 +468,64 @@ fun PaperlessCalendar(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.size(24.dp))
-            Row() {
-                LocalImage(
-                    imageId = com.paperless.app.R.drawable.paperless_calendar,
-                    contentDes = "Calendar icon",
-                    color = MaterialTheme.colors.Paperless_Button
-                )
-                Spacer(modifier = Modifier.size(8.dp))
-                Text(
-                    monthYear.value,
-                    style = MaterialTheme.typography.paperless_font.h5,
-                    color = MaterialTheme.colors.Paperless_Button,
-                    fontWeight = FontWeight.Bold
-                )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.size(35.dp).background(
+                        color = Color(0x80CCCCCC),
+                        shape = RoundedCornerShape(50)
+                    ).clickable {
+                        weekBefore.value += 1
+                    }
+                ) {
+                    LocalImage(
+                        imageId = com.paperless.app.R.drawable.back_paperless,
+                        contentDes = "back",
+                        color = MaterialTheme.colors.Paperless_Text_Black,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Row() {
+                    LocalImage(
+                        imageId = com.paperless.app.R.drawable.paperless_calendar,
+                        contentDes = "Calendar icon",
+                        color = MaterialTheme.colors.Paperless_Button
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(
+                        monthYear.value,
+                        style = MaterialTheme.typography.paperless_font.h5,
+                        color = MaterialTheme.colors.Paperless_Button,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                if(weekBefore.value>0) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.size(35.dp).background(
+                            color = Color(0x80CCCCCC),
+                            shape = RoundedCornerShape(50)
+                        ).clickable {
+                            weekBefore.value -= 1
+                        }
+                    ) {
+                        LocalImage(
+                            imageId = com.paperless.app.R.drawable.forward_paperless,
+                            contentDes = "back",
+                            color = MaterialTheme.colors.Paperless_Text_Black,
+                            modifier = Modifier.size(20.dp)
+
+                        )
+                    }
+                }else{
+                    Spacer(modifier = Modifier.size(35.dp))
+                }
             }
 
             Row(
@@ -486,21 +561,26 @@ fun PaperlessCalendar(
                                         MaterialTheme.colors.Paperless_Button
                                     else Color.Transparent,
                                     shape = CircleShape
-                                )
+                                ).clickable {
+                                    if (!it.value.isFutureDate()) {
+                                        selectedDate.value = it.value
+                                        onSelect.invoke(it.value)
+                                    }
+                                }
                         ) {
 
                             Text(
                                 text = "${it.value.getDateFromTime()}",
                                 style = MaterialTheme.typography.paperless_font.body1,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isSelectedDate(it.value, selectedDate.value))
+                                color =
+                                if (isSelectedDate(it.value, selectedDate.value))
                                     MaterialTheme.colors.Paperless_White
+                                else if (it.value.isFutureDate())
+                                    MaterialTheme.colors.Paperless_Text_Grey
                                 else
                                     MaterialTheme.colors.Paperless_Text_Black,
-                                modifier = Modifier.clickable {
-                                    selectedDate.value = it.value
-                                    onSelect.invoke(it.value)
-                                }
+                                modifier = Modifier
                             )
                         }
                         Spacer(modifier = Modifier.size(16.dp))
@@ -516,6 +596,7 @@ fun isSelectedDate(date1: Long, date2: Long): Boolean {
     return date1.getDDMMYYYY() == date2.getDDMMYYYY()
 }
 
+fun Long.isFutureDate(): Boolean = Date().time < this
 
 fun Long.getDateFromTime(): Int {
     val calendar = Calendar.getInstance()
@@ -524,7 +605,7 @@ fun Long.getDateFromTime(): Int {
 }
 
 @Composable
-fun PaperlessAmountDisplay(amount: Float) {
+fun PaperlessAmountDisplay(amount: String) {
     Box(
         modifier = Modifier
             .size(200.dp)
@@ -555,7 +636,9 @@ fun PaperlessAmountDisplay(amount: Float) {
 fun TextInput(
     label: String,
     hint: String,
-    inputText: MutableState<String>
+    inputText: MutableState<String>,
+    passwordVisibility : Boolean = false,
+    bgColor: Color = MaterialTheme.colors.Paperless_input_background
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -578,9 +661,11 @@ fun TextInput(
                     style = MaterialTheme.typography.paperless_font.body2
                 )
             },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            visualTransformation = if (passwordVisibility.not()) VisualTransformation.None else PasswordVisualTransformation(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 cursorColor = MaterialTheme.colors.Paperless_Text_Black,
-                backgroundColor = MaterialTheme.colors.Paperless_input_background,
+                backgroundColor = bgColor,
                 focusedBorderColor = Color(0xAA3C3DBF),
                 unfocusedBorderColor = MaterialTheme.colors.Paperless_input_background
             ),
@@ -680,20 +765,22 @@ fun SearchInput(
 fun SolidButton(
     name: String,
     modifier: Modifier = Modifier,
-    isTransparent : Boolean = false,
+    isTransparent: Boolean = false,
+    iconId: Int? = null,
+    isLoading: MutableState<Boolean> = mutableStateOf(false),
     onClick: () -> Unit
 ) {
+    Timber.d("Loading - ${isLoading.value}")
     Button(
         modifier = modifier
             .height(45.dp)
-            .width(170.dp)
-            ,
+            .width(170.dp),
         onClick = {
             onClick.invoke()
         },
         shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = if(isTransparent)  Color.Transparent else MaterialTheme.colors.Paperless_Button,
+            backgroundColor = if (isTransparent) MaterialTheme.colors.Paperless_Text_Grey else MaterialTheme.colors.Paperless_Button,
             contentColor = MaterialTheme.colors.Paperless_White
         ),
         elevation = ButtonDefaults.elevation(
@@ -702,12 +789,25 @@ fun SolidButton(
             disabledElevation = 0.dp
         )
     ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.paperless_font.body1,
-            color = if(isTransparent) MaterialTheme.colors.Paperless_Text_Black else MaterialTheme.colors.Paperless_White,
-            fontWeight = FontWeight.SemiBold
-        )
+
+        if(isLoading.value)
+        {
+            //show loading indicator
+            CircularProgressIndicator(
+                modifier = Modifier.size(25.dp),
+                color = MaterialTheme.colors.Paperless_White,
+                strokeWidth = 2.dp
+            )
+        }else {
+            iconId?.let {
+                LocalImage(imageId = it, contentDes = "name")
+            } ?:Text(
+                text = name,
+                style = MaterialTheme.typography.paperless_font.body1,
+                color = if (isTransparent) MaterialTheme.colors.Paperless_Text_Black else MaterialTheme.colors.Paperless_White,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 
@@ -725,9 +825,11 @@ fun PageHeader(label: String) {
 }
 
 @Composable
-fun TabBarHeader(headerList : List<String>,
-                 selected : String,
-                 onClick: (String) -> Unit){
+fun TabBarHeader(
+    headerList: List<String>,
+    selected: String,
+    onClick: (String) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -736,12 +838,13 @@ fun TabBarHeader(headerList : List<String>,
             .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.SpaceAround
 
-    ){
-        headerList.forEach { label->
-            Column(modifier = Modifier.clickable {
-                onClick.invoke(label)
-            }, horizontalAlignment = Alignment.CenterHorizontally
-            ){
+    ) {
+        headerList.forEach { label ->
+            Column(
+                modifier = Modifier.fillMaxWidth().clickable {
+                    onClick.invoke(label)
+                }, horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = label.uppercase(Locale.getDefault()),
                     style = MaterialTheme.typography.paperless_font.body1,
@@ -755,7 +858,7 @@ fun TabBarHeader(headerList : List<String>,
                         FontWeight.Normal,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                if(selected == label) {
+                if (selected == label) {
                     Divider(
                         thickness = 2.dp,
                         color = MaterialTheme.colors.Paperless_Button,
@@ -763,14 +866,14 @@ fun TabBarHeader(headerList : List<String>,
                     )
                 }
             }
-            Spacer(modifier =  Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(16.dp))
         }
 
     }
 }
 
 @Composable
-fun KeyboardInputComponent(data : MutableState<String> ,label: String,callback : (String)->Unit) {
+fun KeyboardInputComponent(data: MutableState<String>, label: String, callback: (String) -> Unit) {
     val showKeyBoard = remember {
         mutableStateOf(true)
     }
@@ -782,7 +885,7 @@ fun KeyboardInputComponent(data : MutableState<String> ,label: String,callback :
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(start=60.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Top
 
@@ -813,17 +916,21 @@ fun KeyboardInputComponent(data : MutableState<String> ,label: String,callback :
                 )
                 Spacer(modifier = Modifier.size(16.dp))
             }
-            if(showDone.value) {
+            if (showDone.value) {
                 LocalImage(
                     imageId = com.paperless.app.R.drawable.done_icon,
                     contentDes = "correct amount",
                     color = MaterialTheme.colors.Paperless_Button,
-                    modifier = Modifier.size(75.dp).padding(top = 10.dp).clickable {
-                        showDone.value = false
-                        showKeyBoard.value = false
-                    }
+                    modifier = Modifier
+                        .size(75.dp)
+                        .padding(top = 10.dp)
+                        .clickable {
+                            showDone.value = false
+                            showKeyBoard.value = false
+                            callback.invoke(data.value)
+                        }
                 )
-            }else{
+            } else {
                 Spacer(modifier = Modifier.size(75.dp))
             }
         }
@@ -839,6 +946,7 @@ fun KeyboardInputComponent(data : MutableState<String> ,label: String,callback :
                     items(keyboardList.size) {
                         SolidButton(
                             keyboardList[it],
+                            iconId = if (keyboardList[it] == "<-") com.paperless.app.R.drawable.back_arrow_key else null,
                             isTransparent = true,
                             modifier = Modifier.padding(8.dp)
                         ) {
@@ -864,8 +972,8 @@ fun KeyboardInputComponent(data : MutableState<String> ,label: String,callback :
                                         data.value = "${data.value}$char"
                                     }
                             }
-                            callback(data.value)
-                            if(!showDone.value){
+                            //callback(data.value)
+                            if (!showDone.value) {
                                 showDone.value = true
                             }
                         }
@@ -876,5 +984,7 @@ fun KeyboardInputComponent(data : MutableState<String> ,label: String,callback :
 
     }
 }
+
+fun Float.format2Decimal(): String = DecimalFormat("#.##").format(this)
 
 

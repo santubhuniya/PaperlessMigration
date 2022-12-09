@@ -21,6 +21,7 @@ import com.paperless.app.widget.PaperlessAmountDisplay
 import com.paperless.app.widget.TransactionCard
 import com.paperless.app.widget.chart.HalfPieChartCard
 import com.paperless.app.widget.chart.PieChartData
+import com.paperless.app.widget.format2Decimal
 import timber.log.Timber
 
 @Composable
@@ -48,7 +49,7 @@ fun MonthlyExpenseCardDetails(monthlyExpenseDetails: MonthlyExpenseDetails) {
         .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        PaperlessAmountDisplay(monthlyExpenseDetails.totalExpense)
+        PaperlessAmountDisplay(monthlyExpenseDetails.totalExpense.format2Decimal())
         Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = "You spent more than your budget for this month",

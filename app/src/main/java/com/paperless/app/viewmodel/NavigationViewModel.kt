@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.paperless.app.R
 import com.paperless.app.Screens
 import com.paperless.app.repo.PaperlessRepository
+import com.paperless.app.repo.SharedPrefRepo
 import com.paperless.app.ui.theme.Paperless_Button
 import com.paperless.app.ui.theme.Paperless_Text_Black
 import com.paperless.app.ui.theme.paperless_font
@@ -26,12 +27,15 @@ import javax.inject.Inject
 @HiltViewModel
 class NavigationViewModel @Inject constructor(
     val paperlessRepo: PaperlessRepository,
-    application: Application
-) : BaseViewModel(application) {
+    application: Application,
+    sharedPrefRepo: SharedPrefRepo
+) : BaseViewModel(application,sharedPrefRepo) {
 
     val actions : MutableState<List<Actions>> = mutableStateOf(listOf())
     val selectedFooter : MutableState<BottomItem> = mutableStateOf(BottomItem.Home)
     val showBack :MutableState<Boolean> = mutableStateOf(false)
+    val hideTopBar : MutableState<Boolean> = mutableStateOf(true)
+    val hideBottomBar : MutableState<Boolean> = mutableStateOf(true)
 
     val headerActions =
         Actions(
@@ -57,7 +61,13 @@ class NavigationViewModel @Inject constructor(
     fun setupHeaderAndFooter(screens: Screens){
         showBack.value = true
         actions.value = listOf(headerActions)
+        hideTopBar.value = false
+        hideBottomBar.value = false
         when(screens){
+            is Screens.Login ->{
+                hideTopBar.value = true
+                hideBottomBar.value = true
+            }
             is Screens.Dashboard ->{
                 actions.value = listOf(
                     Actions(
@@ -96,6 +106,7 @@ class NavigationViewModel @Inject constructor(
             is Screens.AddIncome,Screens.AddExpense,Screens.AddNewGoal ->{
                 selectedFooter.value = BottomItem.AddButton
             }
+
             else ->{
                 actions.value = listOf(headerActions)
             }

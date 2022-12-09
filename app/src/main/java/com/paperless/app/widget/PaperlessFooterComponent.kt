@@ -155,8 +155,11 @@ fun HeaderCard(
             // show back arrow
             if(showBack) {
                 LocalImage(
-                    imageId = R.drawable.back_arrow, contentDes = "back arrow",
-                    width = 35.dp, color = MaterialTheme.colors.Paperless_Text_Black
+                    imageId = R.drawable.back_paperless, contentDes = "back arrow",
+                     color = MaterialTheme.colors.Paperless_Text_Black,
+                    modifier = Modifier.size(20.dp).clickable {
+                        navHostController.popBackStack()
+                    }
                 )
             }else{
                 //show branding icon
